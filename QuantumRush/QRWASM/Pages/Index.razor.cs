@@ -24,7 +24,7 @@ namespace QRWASM.Pages
 			// init game
 			if (_game == null)
 			{
-				_game = QRLibrary.QuantumRush.Instance();
+				_game = new QRWASMGame();
 				_game.Run();
 			}
 
