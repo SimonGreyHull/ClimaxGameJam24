@@ -38,8 +38,8 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < Terrain.TERRAIN_ROWS; j++)
 				{
-					_shapeBatcher.DrawTriangle(_terrain.Vertices[i, j], _terrain.Vertices[i + 1, j + 1], _terrain.Vertices[i + 1, j], Color.Red);
-					_shapeBatcher.DrawTriangle(_terrain.Vertices[i, j], _terrain.Vertices[i, j + 1], _terrain.Vertices[i + 1, j + 1], Color.DodgerBlue);
+					_shapeBatcher.DrawTriangle(_terrain.Vertices[i, j], _terrain.Vertices[i + 1, j + 1], _terrain.Vertices[i + 1, j], _terrain.Colours[i,j]);
+					_shapeBatcher.DrawTriangle(_terrain.Vertices[i, j], _terrain.Vertices[i, j + 1], _terrain.Vertices[i + 1, j + 1], _terrain.Colours[i, j]);
 				}
 			}
 
@@ -53,12 +53,12 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void Update(float pSeconds)
 		{
-			// _SecondsLeft -= pSeconds;
+			_SecondsLeft -= pSeconds;
 
 			if (_SecondsLeft <= 0.0f)
 			{
 				QuantumRush game = QuantumRush.Instance();
-				game.ReplaceScreen(new GameOverScreen());
+			//	game.ReplaceScreen(new GameOverScreen());
 			}
 
 			float dx = 0f, dy = 0f, rot = 0f, change = 0.5f, scale = 1f;
