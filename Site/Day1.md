@@ -20,19 +20,27 @@ Also make time to pay attention to mental health issues:
 
 - [ ] Record reflection at the end of each day
 
+# Theme - PERIODIC!
+
 ## Inspirations
+
+The Club
 
 Have enjoyed playing vampire survivors recently. Mechanics are fairly simple - would like to allow the player a little more control, and probably have fewer enemies with more complex behaviours.
 
 Really like the idea of a challenging task that allows you to upgrade skills between play sessions.
 
-Also enjoyed Doom Eternal, in particular the way enemies are more accurate when the player stops moving.
+### Doom Eternal, in particular the way enemies are more accurate when the player stops moving. 
+### Dishonoured, Also like the idea of allowing for more stealthy paths (like in Dishonoured).
+Like the idea of creating a balance between slow and stealthy and fast and manic - I think this is appropriate as I feel that looking after mental health is also about balance.
 
-Also like the idea of allowing for more stealthy paths (like in Dishonoured).
 
-# Theme
 
 ## Brainstorming
+
+```mermaid
+
+```
 
 ## Target before bed
 
