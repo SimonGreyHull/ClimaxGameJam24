@@ -28,6 +28,16 @@ namespace QRLibrary
 			_screenManager.Push(screen);
 		}
 
+		internal void PushScreen(IScreen screen)
+		{
+			_screenManager.Push(screen);
+		}
+
+		internal void PopScreen()
+		{
+			_screenManager.Pop();
+		}
+
 		private QuantumRush()
 		{
 			_graphics = new GraphicsDeviceManager(this);

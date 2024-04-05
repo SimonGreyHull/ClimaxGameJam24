@@ -25,3 +25,11 @@
 /processorParam:TextureFormat=Color
 /build:selogo.png
 
+#begin Font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/processorParam:Smoothing=Normal
+/build:Font.spritefont
+
