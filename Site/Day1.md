@@ -42,3 +42,23 @@ Also like the idea of allowing for more stealthy paths (like in Dishonoured).
 - [ ] Set up game screens.
 - [ ] Set up itch and upload.
 - [ ] Make list of game mechanics to implement.
+
+### Set up game screens
+
+```mermaid
+---
+title: Game States
+---
+stateDiagram-v2
+    [*] --> FlashScreen
+    FlashScreen --> TitleScreen : After n seconds
+    TitleScreen --> AboutScreen : select "About"
+    AboutScreen --> TitleScreen : select "Return"
+    TitleScreen --> GameScreen : select "Start"
+    GameScreen --> PauseScreen 
+    PauseScreen --> GameScreen
+    GameOverLoseScreen --> TitleScreen : select "Return"
+    GameOverWinScreen --> TitleScreen : select "Return"
+    GameScreen --> GameOverWinScreen : player wins
+    GameScreen --> GameOverLoseScreen : player loses
+```
