@@ -12,11 +12,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)DGS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuantumRush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\FlashScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameOverScreen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\GameScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Terrain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\IScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\ScreenManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\TitleScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shapes\ShapeBatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
@@ -25,8 +28,5 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\selogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Screens\Game\" />
   </ItemGroup>
 </Project>
