@@ -1,3 +1,3 @@
 ﻿
-using var game = new QRDesktop.Game1();
+using var game = QRLibrary.QuantumRush.Instance();
 game.Run();

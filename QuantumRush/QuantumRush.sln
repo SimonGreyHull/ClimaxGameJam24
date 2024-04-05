@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRWASM", "QRWASM\QRWASM.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRDesktop", "QRDesktop\QRDesktop.csproj", "{A149AFC8-02D4-42DF-9DB5-015AAF2939B1}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "QRLibrary", "QRLibrary\QRLibrary.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,5 +29,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9E87EE1-56DF-4BAE-8EFF-EB3BFA39D181}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		QRLibrary\QRLibrary.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
+		QRLibrary\QRLibrary.projitems*{a149afc8-02d4-42df-9db5-015aaf2939b1}*SharedItemsImports = 5
+		QRLibrary\QRLibrary.projitems*{c0f28836-ff2a-48ed-aa2e-3ca51bb220f2}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

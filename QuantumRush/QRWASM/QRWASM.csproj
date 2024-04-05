@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
@@ -37,5 +37,7 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\QRWASMContent.mgcb" />
   </ItemGroup>
+
+  <Import Project="..\QRLibrary\QRLibrary.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder17.targets" />
 </Project>
