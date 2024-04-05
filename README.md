@@ -9,3 +9,8 @@ Mind are a mental health charity that aims to change minds across England and Wa
 Mental Health is such an important issue that I would think impacts everyone at some point in their life - especially students. I've very happy to be able to support this cause.
 
 This GitHub repository will be used to host code and document progress throughout the game jam.
+
+# Jam Goals
+
+Publish *something* (hopefully approximating a finished game) that is playable online through the browser.
+Also make time to highlight mental health issues, and schedule mental health as part of the jam (this means in addition to taking part in the Jam should also make time for adequate sleep and physical exercise).
