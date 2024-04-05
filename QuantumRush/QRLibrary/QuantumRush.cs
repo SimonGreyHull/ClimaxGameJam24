@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using QRLibrary.Screens;
 
 namespace QRLibrary
 {
@@ -19,6 +20,13 @@ namespace QRLibrary
 
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
+		private ScreenManager _screenManager = new ScreenManager();
+
+		internal void ReplaceScreen(IScreen screen)
+		{
+			_screenManager.Pop();
+			_screenManager.Push(screen);
+		}
 
 		private QuantumRush()
 		{
@@ -39,12 +47,17 @@ namespace QRLibrary
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
+
+			_screenManager.Push(new FlashScreen());
 		}
 
 		protected override void Update(GameTime gameTime)
 		{
 			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
+
+			float seconds = 0.001f * gameTime.ElapsedGameTime.Milliseconds;
+			_screenManager.Update(seconds);
 
 			// TODO: Add your update logic here
 
@@ -53,9 +66,9 @@ namespace QRLibrary
 
 		protected override void Draw(GameTime gameTime)
 		{
-			GraphicsDevice.Clear(Color.Red);
-
 			// TODO: Add your drawing code here
+			float seconds = 0.001f * gameTime.ElapsedGameTime.Milliseconds;
+			_screenManager.Draw(seconds);
 
 			base.Draw(gameTime);
 		}
