@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)QuantumRush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\FlashScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameOverScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\GameScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Terrain.cs" />

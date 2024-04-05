@@ -12,7 +12,7 @@ namespace QRLibrary.Screens.GameEntities
 		public Camera()
 		{
 			_View = Matrix.Identity;
-			_Projection = Matrix.CreateOrthographicOffCenter(-500, 500, -500, 500, 0f, 1f);
+			_Projection = Matrix.CreateOrthographicOffCenter(-50, 50, -50, 50, 0f, 1f);
 		}
 
 		public Matrix Projection { get { return _Projection; } }

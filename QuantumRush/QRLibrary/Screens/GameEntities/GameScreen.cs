@@ -15,9 +15,10 @@ namespace QRLibrary.Screens.GameEntities
 
 		private Terrain _terrain = new();
 		private Camera _camera = new();
+		private Player _player = new();
 
 		public Camera Camera { get { return _camera; } }
-
+		public Player Player { get { return _player; } }
 		internal GameScreen()
 		{
 			_SecondsLeft = 15;
@@ -43,6 +44,8 @@ namespace QRLibrary.Screens.GameEntities
 				}
 			}
 
+			_shapeBatcher.DrawCircle(_player.Position, 10, 16, 2, Color.Red);
+
 			_shapeBatcher.End();
 
 			_batch.Begin();
@@ -61,7 +64,7 @@ namespace QRLibrary.Screens.GameEntities
 			//	game.ReplaceScreen(new GameOverScreen());
 			}
 
-			float dx = 0f, dy = 0f, rot = 0f, change = 0.5f, scale = 1f;
+			float dx = 0f, dy = 0f, rot = 0f, change = 0.25f, scale = 1f;
 			if (Keyboard.GetState().IsKeyDown(Keys.A))
 			{
 				dx -= change;
@@ -95,7 +98,7 @@ namespace QRLibrary.Screens.GameEntities
 				scale -= change;
 			}
 			_camera.Translate(dx, dy);
-			_camera.Rotate(rot);
+			//_camera.Rotate(rot);
 			_camera.Scale(scale);
 		}
 	}
