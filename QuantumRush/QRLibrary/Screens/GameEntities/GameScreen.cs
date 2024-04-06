@@ -41,12 +41,12 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < Terrain.TERRAIN_ROWS; j++)
 				{
-					_shapeBatcher.DrawTriangle(_terrain.Vertices[i, j], _terrain.Vertices[i + 1, j + 1], _terrain.Vertices[i + 1, j], _terrain.Colours[i,j]);
-					_shapeBatcher.DrawTriangle(_terrain.Vertices[i, j], _terrain.Vertices[i, j + 1], _terrain.Vertices[i + 1, j + 1], _terrain.Colours[i, j]);
+					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i, 2 * j], _terrain.Colours[i, j]);
+					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i + 1, 2 * j + 1], _terrain.Colours[i, j]);
 				}
 			}
 
-			_shapeBatcher.DrawCircle(_player.Position, 10, 16, 2, Color.Red);
+			_shapeBatcher.DrawCircle(_player.Circle.Position, _player.Circle.Radius, 16, 2, Color.Red);
 
 			_shapeBatcher.DrawArrow(_player.Position, _mouseInWorldSpace - _player.Position, 2, 3, Color.White);
 
@@ -81,61 +81,34 @@ namespace QRLibrary.Screens.GameEntities
 				_player.strafe = Player.Strafe.RIGHT;
 			}
 
-			Point point = new Point();
-
 			_mouseInWorldSpace = _camera.ScreenSpaceToWorldSpace(Mouse.GetState().Position);
 
 			Vector2 heading = _mouseInWorldSpace - _player.Position;
 			heading.Normalize();
 			_player.Update(pSeconds, heading);
+			
+			if(_terrain.CheckPlayerCollision(_player))
+			{
+				_player.PreviousPosition();
+			}
+
+			if(_terrain.ReachedTarget(_player.Position))
+			{
+				_SecondsLeft += 3;
+				_terrain.ChangeTarget();
+			}
+
+			//_terrain.UpdateMouse(_mouseInWorldSpace);
 
 			_SecondsLeft -= pSeconds;
 
 			if (_SecondsLeft <= 0.0f)
 			{
 				QuantumRush game = QuantumRush.Instance();
-				//	game.ReplaceScreen(new GameOverScreen());
+			//	game.ReplaceScreen(new GameOverScreen());
 			}
 
-			//float dx = 0f, dy = 0f, rot = 0f, change = 0.25f, scale = 1f;
-			//if (Keyboard.GetState().IsKeyDown(Keys.A))
-			//{
-			//	dx -= change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.D))
-			//{
-			//	dx += change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.W))
-			//{
-			//	dy -= change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.S))
-			//{
-			//	dy += change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.Q))
-			//{
-			//	rot += change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.E))
-			//{
-			//	rot -= change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.R))
-			//{
-			//	scale += change;
-			//}
-			//if (Keyboard.GetState().IsKeyDown(Keys.F))
-			//{
-			//	scale -= change;
-			//}
-
-			_camera.LookAt(_player.Position);
-
-			//_camera.Translate(dx, dy);
-			////_camera.Rotate(rot);
-			//_camera.Scale(scale);
+			_camera.LookAt(_player.Position, _player.Heading);
 		}
 	}
 }

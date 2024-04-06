@@ -303,6 +303,11 @@ namespace QRLibrary.Shapes
 			DrawLine(lineEnd, arrowHead2, pThickness, pColour);
 		}
 
+		public void DrawTriangle(Triangle pTriangle, Color pColour)
+		{
+			DrawTriangle(pTriangle.V1, pTriangle.V2, pTriangle.V3, pColour);
+		}
+
 		public void DrawTriangle(Vector2 pA, Vector2 pB, Vector2 pC, Color pColour)
 		{
 			EnsureStarted();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using QRLibrary.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +14,11 @@ namespace QRLibrary.Screens.GameEntities
 		public Movement movement { get; set; }
 		public Strafe strafe { get; set; }
 
-		public Vector2 Position { get; private set; }
+		public Circle Circle { get; private set; }
+
+		private Vector2 OldPosition { get; set; }
+
+		public Vector2 Position { get { return Circle.Position; } }
 		public Vector2 Heading { get; private set; }
 
 		public float MAX_SPEED { get; private set; }
@@ -21,32 +26,38 @@ namespace QRLibrary.Screens.GameEntities
 		public Player() {
 			movement = Movement.NONE;
 			strafe = Strafe.NONE;
-			Position = new Vector2(100, 100);
+			Circle = new Circle(new Vector2(150, 250), 8);
 		}
 
 		public void Update(float seconds, Vector2 heading)
 		{
+			OldPosition = Position;
 			Heading = heading;
 			Vector2 v = heading * 100 * seconds;
 			switch (movement)
 			{
 				case Movement.FORWARD:
-					Position += v;
+					Circle.Position += v;
 					break;
 				case Movement.BACKWARD:
-					Position -= v;
+					Circle.Position -= v;
 					break;
 			}
 
 			switch(strafe)
 			{
 				case Strafe.LEFT:
-					Position += new Vector2(-v.Y, v.X);
+					Circle.Position += new Vector2(-v.Y, v.X);
 					break;
 				case Strafe.RIGHT:
-					Position += new Vector2(v.Y, -v.X);
+					Circle.Position += new Vector2(v.Y, -v.X);
 					break;
 			}
+		}
+
+		public void PreviousPosition()
+		{
+			Circle.Position = OldPosition;
 		}
 	}
 }

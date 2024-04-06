@@ -8,149 +8,13 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace QRLibrary.Screens.GameEntities
 {
-	public class Camera2
-	{
-		public float Zoom { get; set; }
-		public Vector2 Position { get; set; }
-		public Rectangle Bounds { get; protected set; }
-		public Rectangle VisibleArea { get; protected set; }
-		public Matrix Transform { get; protected set; }
-
-		private float currentMouseWheelValue, previousMouseWheelValue, zoom, previousZoom;
-
-		public Camera2()
-		{
-			Bounds = QuantumRush.Instance().GraphicsDevice.Viewport.Bounds ;
-			Zoom = 1f;
-			Position = Vector2.Zero;
-		}
-
-
-		private void UpdateVisibleArea()
-		{
-			var inverseViewMatrix = Matrix.Invert(Transform);
-
-			var tl = Vector2.Transform(Vector2.Zero, inverseViewMatrix);
-			var tr = Vector2.Transform(new Vector2(Bounds.X, 0), inverseViewMatrix);
-			var bl = Vector2.Transform(new Vector2(0, Bounds.Y), inverseViewMatrix);
-			var br = Vector2.Transform(new Vector2(Bounds.Width, Bounds.Height), inverseViewMatrix);
-
-			var min = new Vector2(
-				MathHelper.Min(tl.X, MathHelper.Min(tr.X, MathHelper.Min(bl.X, br.X))),
-				MathHelper.Min(tl.Y, MathHelper.Min(tr.Y, MathHelper.Min(bl.Y, br.Y))));
-			var max = new Vector2(
-				MathHelper.Max(tl.X, MathHelper.Max(tr.X, MathHelper.Max(bl.X, br.X))),
-				MathHelper.Max(tl.Y, MathHelper.Max(tr.Y, MathHelper.Max(bl.Y, br.Y))));
-			VisibleArea = new Rectangle((int)min.X, (int)min.Y, (int)(max.X - min.X), (int)(max.Y - min.Y));
-		}
-
-		private void UpdateMatrix()
-		{
-			Transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
-					Matrix.CreateScale(Zoom) *
-					Matrix.CreateTranslation(new Vector3(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0));
-			UpdateVisibleArea();
-		}
-
-		public void MoveCamera(Vector2 movePosition)
-		{
-			Vector2 newPosition = Position + movePosition;
-			Position = newPosition;
-		}
-
-		public void AdjustZoom(float zoomAmount)
-		{
-			Zoom += zoomAmount;
-			if (Zoom < .35f)
-			{
-				Zoom = .35f;
-			}
-			if (Zoom > 2f)
-			{
-				Zoom = 2f;
-			}
-		}
-
-		public void UpdateCamera()
-		{
-			Viewport bounds = QuantumRush.Instance().GraphicsDevice.Viewport;
-			Bounds = bounds.Bounds;
-			UpdateMatrix();
-
-			Vector2 cameraMovement = Vector2.Zero;
-			int moveSpeed;
-
-			if (Zoom > .8f)
-			{
-				moveSpeed = 15;
-			}
-			else if (Zoom < .8f && Zoom >= .6f)
-			{
-				moveSpeed = 20;
-			}
-			else if (Zoom < .6f && Zoom > .35f)
-			{
-				moveSpeed = 25;
-			}
-			else if (Zoom <= .35f)
-			{
-				moveSpeed = 30;
-			}
-			else
-			{
-				moveSpeed = 10;
-			}
-
-
-			if (Keyboard.GetState().IsKeyDown(Keys.W))
-			{
-				cameraMovement.Y = -moveSpeed;
-			}
-
-			if (Keyboard.GetState().IsKeyDown(Keys.S))
-			{
-				cameraMovement.Y = moveSpeed;
-			}
-
-			if (Keyboard.GetState().IsKeyDown(Keys.A))
-			{
-				cameraMovement.X = -moveSpeed;
-			}
-
-			if (Keyboard.GetState().IsKeyDown(Keys.D))
-			{
-				cameraMovement.X = moveSpeed;
-			}
-
-			previousMouseWheelValue = currentMouseWheelValue;
-			currentMouseWheelValue = Mouse.GetState().ScrollWheelValue;
-
-			if (currentMouseWheelValue > previousMouseWheelValue)
-			{
-				AdjustZoom(.05f);
-				Console.WriteLine(moveSpeed);
-			}
-
-			if (currentMouseWheelValue < previousMouseWheelValue)
-			{
-				AdjustZoom(-.05f);
-				Console.WriteLine(moveSpeed);
-			}
-
-			previousZoom = zoom;
-			zoom = Zoom;
-			if (previousZoom != zoom)
-			{
-				Console.WriteLine(zoom);
-
-			}
-
-			MoveCamera(cameraMovement);
-		}
-	}
-
 	internal class Camera
 	{
+		private Vector2 _currentPosition;
+		private Vector2 _currentHeading;
+		private Vector2 _targetPosition;
+		private Vector2 _targetHeading;
+
 		private Matrix _View;
 		private Matrix _Projection;
 		public Camera()
@@ -160,14 +24,22 @@ namespace QRLibrary.Screens.GameEntities
 			_Projection = Matrix.CreateOrthographic(QuantumRush.Instance().GraphicsDevice.Viewport.Width,
 				QuantumRush.Instance().GraphicsDevice.Viewport.Height,
 				0f, 1f);
+
+			_currentPosition = Vector2.Zero;
+			_currentHeading = Vector2.UnitY;
 		}
 
 		public Matrix Projection { get { return _Projection; } }
 		public Matrix View { get { return _View; } }
 
-		public void LookAt(Vector2 position)
+		public void LookAt(Vector2 position, Vector2 heading)
 		{
-			_View = Matrix.CreateLookAt(new Vector3(position.X, position.Y, 0.5f), new Vector3(position.X, position.Y, 0), Vector3.UnitY);
+			_currentPosition += (position - _currentPosition) * 0.05f;
+
+			_currentHeading += (heading - _currentHeading) * 0.005f;
+			_currentHeading.Normalize();
+
+			_View = Matrix.CreateLookAt(new Vector3(_currentPosition.X, _currentPosition.Y, 0.5f), new Vector3(_currentPosition.X, _currentPosition.Y, 0), new Vector3(_currentHeading.X, _currentHeading.Y, 0));
 		}
 
 		public void Translate(float x, float y)
