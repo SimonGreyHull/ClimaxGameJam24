@@ -157,6 +157,9 @@ namespace QRLibrary.Screens.GameEntities
 		{
 			_View = Matrix.Identity;
 			_Projection = Matrix.CreateOrthographicOffCenter(-500, 500, -500, 500, 0f, 1f);
+			_Projection = Matrix.CreateOrthographic(QuantumRush.Instance().GraphicsDevice.Viewport.Width,
+				QuantumRush.Instance().GraphicsDevice.Viewport.Height,
+				0f, 1f);
 		}
 
 		public Matrix Projection { get { return _Projection; } }
