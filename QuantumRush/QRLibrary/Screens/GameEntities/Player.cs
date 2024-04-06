@@ -11,6 +11,16 @@ namespace QRLibrary.Screens.GameEntities
 		public enum Movement { FORWARD, NONE, BACKWARD };
 		public enum Strafe { LEFT, NONE, RIGHT };
 
+		private float bulletCooldown = 1f;
+
+		public bool CanFire { get { return bulletCooldown <= 0f; } }
+
+		public Bullet GetBullet()
+		{
+			bulletCooldown = 0.5f;
+			return new Bullet(new Circle(Position, 4), Heading * 100);
+		}
+
 		public Movement movement { get; set; }
 		public Strafe strafe { get; set; }
 
@@ -44,7 +54,7 @@ namespace QRLibrary.Screens.GameEntities
 					break;
 			}
 
-			switch(strafe)
+			switch (strafe)
 			{
 				case Strafe.LEFT:
 					Circle.Position += new Vector2(-v.Y, v.X);
@@ -52,6 +62,11 @@ namespace QRLibrary.Screens.GameEntities
 				case Strafe.RIGHT:
 					Circle.Position += new Vector2(v.Y, -v.X);
 					break;
+			}
+
+			if (bulletCooldown > 0)
+			{
+				bulletCooldown -= seconds;
 			}
 		}
 

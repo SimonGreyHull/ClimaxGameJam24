@@ -18,6 +18,9 @@ namespace QRLibrary.Screens.GameEntities
 		public const int CELL_WIDTH = 100;
 		public const int CELL_HEIGHT = 100;
 
+		public Bullet[] _bullets = new Bullet[100];
+		public int _bulletCount = 0;
+
 		private Vector2[,] _terrainVertices = new Vector2[TERRAIN_COLS + 1, TERRAIN_ROWS + 1];
 		private Color[,] _cellColours = new Color[TERRAIN_COLS, TERRAIN_ROWS];
 
@@ -93,7 +96,35 @@ namespace QRLibrary.Screens.GameEntities
 			}
 		}
 
-		public bool CheckPlayerCollision(Player player)
+		public void UpdateBullets(float seconds)
+		{
+			for(int i = 0; i < _bulletCount; i++)
+			{
+				_bullets[i].Update(seconds);
+			}
+
+			for(int i = _bulletCount - 1; i >= 0; i--)
+			{
+				if (CheckWallsCollision(_bullets[i].Circle))
+				{
+					_bullets[i] = _bullets[_bulletCount - 1];
+					_bulletCount--;
+				}
+			}
+		}
+
+		public void AddBullet(Bullet bullet)
+		{
+			if(_bulletCount == _bullets.Length)
+			{
+				return;
+			}
+
+			_bullets[_bulletCount] = bullet;
+			_bulletCount++;
+		}
+
+		public bool CheckWallsCollision(Circle circle)
 		{
 			for (int i = 0; i < TERRAIN_COLS; i++)
 			{
@@ -101,7 +132,7 @@ namespace QRLibrary.Screens.GameEntities
 				{
 					if (_cellColours[i, j] == Color.Black)
 					{
-						if (_triangles[2 * i, 2 * j].IntersectsCircle(player.Circle) || _triangles[2 * i + 1, 2 * j + 1].IntersectsCircle(player.Circle))
+						if (_triangles[2 * i, 2 * j].IntersectsCircle(circle) || _triangles[2 * i + 1, 2 * j + 1].IntersectsCircle(circle))
 						{
 							return true;
 						}
@@ -109,6 +140,11 @@ namespace QRLibrary.Screens.GameEntities
 				}
 			}
 			return false;
+		}
+
+		public bool CheckPlayerCollision(Player player)
+		{
+			return CheckWallsCollision(player.Circle);
 		}
 
 		public void ChangeTarget()

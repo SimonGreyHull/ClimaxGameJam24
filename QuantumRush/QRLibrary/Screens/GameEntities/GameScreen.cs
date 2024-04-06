@@ -46,6 +46,11 @@ namespace QRLibrary.Screens.GameEntities
 				}
 			}
 
+			for(int i = 0; i < _terrain._bulletCount; i++)
+			{
+				_shapeBatcher.DrawCircle(_terrain._bullets[i].Circle.Position, _terrain._bullets[i].Circle.Radius, 8, 2, Color.Gold);
+			}
+
 			_shapeBatcher.DrawCircle(_player.Circle.Position, _player.Circle.Radius, 16, 2, Color.Red);
 
 			_shapeBatcher.DrawArrow(_player.Position, _mouseInWorldSpace - _player.Position, 2, 3, Color.White);
@@ -81,6 +86,14 @@ namespace QRLibrary.Screens.GameEntities
 				_player.strafe = Player.Strafe.RIGHT;
 			}
 
+			if(Mouse.GetState().LeftButton == ButtonState.Pressed)
+			{
+				if(_player.CanFire)
+				{
+					_terrain.AddBullet(_player.GetBullet());
+				}
+			}
+
 			_mouseInWorldSpace = _camera.ScreenSpaceToWorldSpace(Mouse.GetState().Position);
 
 			Vector2 heading = _mouseInWorldSpace - _player.Position;
@@ -92,13 +105,15 @@ namespace QRLibrary.Screens.GameEntities
 				_player.PreviousPosition();
 			}
 
-			if(_terrain.ReachedTarget(_player.Position))
+			if (_terrain.ReachedTarget(_player.Position))
 			{
 				_SecondsLeft += 3;
 				_terrain.ChangeTarget();
 			}
 
 			//_terrain.UpdateMouse(_mouseInWorldSpace);
+
+			_terrain.UpdateBullets(pSeconds);
 
 			_SecondsLeft -= pSeconds;
 
