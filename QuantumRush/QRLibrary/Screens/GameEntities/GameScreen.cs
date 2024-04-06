@@ -13,6 +13,8 @@ namespace QRLibrary.Screens.GameEntities
 		private SpriteBatch _batch;
 		private ShapeBatcher _shapeBatcher;
 
+		private Vector2 _mouseInWorldSpace;
+
 		private Terrain _terrain = new();
 		private Camera _camera = new();
 		private Player _player = new();
@@ -46,6 +48,8 @@ namespace QRLibrary.Screens.GameEntities
 
 			_shapeBatcher.DrawCircle(_player.Position, 10, 16, 2, Color.Red);
 
+			_shapeBatcher.DrawArrow(_player.Position, _mouseInWorldSpace - _player.Position, 2, 3, Color.White);
+
 			_shapeBatcher.End();
 
 			_batch.Begin();
@@ -56,50 +60,82 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void Update(float pSeconds)
 		{
+			_player.movement = Player.Movement.NONE;
+			_player.strafe = Player.Strafe.NONE;
+
+			if(Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.S))
+			{
+				_player.movement = Player.Movement.FORWARD;
+			}
+			else if(Keyboard.GetState().IsKeyDown(Keys.S) && !Keyboard.GetState().IsKeyDown(Keys.W))
+			{
+				_player.movement = Player.Movement.BACKWARD;
+			}
+
+			if (Keyboard.GetState().IsKeyDown(Keys.A) && !Keyboard.GetState().IsKeyDown(Keys.D))
+			{
+				_player.strafe = Player.Strafe.LEFT;
+			}
+			else if (Keyboard.GetState().IsKeyDown(Keys.D) && !Keyboard.GetState().IsKeyDown(Keys.A))
+			{
+				_player.strafe = Player.Strafe.RIGHT;
+			}
+
+			Point point = new Point();
+
+			_mouseInWorldSpace = _camera.ScreenSpaceToWorldSpace(Mouse.GetState().Position);
+
+			Vector2 heading = _mouseInWorldSpace - _player.Position;
+			heading.Normalize();
+			_player.Update(pSeconds, heading);
+
 			_SecondsLeft -= pSeconds;
 
 			if (_SecondsLeft <= 0.0f)
 			{
 				QuantumRush game = QuantumRush.Instance();
-			//	game.ReplaceScreen(new GameOverScreen());
+				//	game.ReplaceScreen(new GameOverScreen());
 			}
 
-			float dx = 0f, dy = 0f, rot = 0f, change = 0.25f, scale = 1f;
-			if (Keyboard.GetState().IsKeyDown(Keys.A))
-			{
-				dx -= change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.D))
-			{
-				dx += change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.W))
-			{
-				dy -= change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.S))
-			{
-				dy += change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.Q))
-			{
-				rot += change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.E))
-			{
-				rot -= change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.R))
-			{
-				scale += change;
-			}
-			if (Keyboard.GetState().IsKeyDown(Keys.F))
-			{
-				scale -= change;
-			}
-			_camera.Translate(dx, dy);
-			//_camera.Rotate(rot);
-			_camera.Scale(scale);
+			//float dx = 0f, dy = 0f, rot = 0f, change = 0.25f, scale = 1f;
+			//if (Keyboard.GetState().IsKeyDown(Keys.A))
+			//{
+			//	dx -= change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.D))
+			//{
+			//	dx += change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.W))
+			//{
+			//	dy -= change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.S))
+			//{
+			//	dy += change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.Q))
+			//{
+			//	rot += change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.E))
+			//{
+			//	rot -= change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.R))
+			//{
+			//	scale += change;
+			//}
+			//if (Keyboard.GetState().IsKeyDown(Keys.F))
+			//{
+			//	scale -= change;
+			//}
+
+			_camera.LookAt(_player.Position);
+
+			//_camera.Translate(dx, dy);
+			////_camera.Rotate(rot);
+			//_camera.Scale(scale);
 		}
 	}
 }
