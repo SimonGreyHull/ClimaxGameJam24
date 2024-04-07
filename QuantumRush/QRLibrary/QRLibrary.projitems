@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Bullet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Enemy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\EnemySpawner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameOverScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameEntities\GameScreen.cs" />
