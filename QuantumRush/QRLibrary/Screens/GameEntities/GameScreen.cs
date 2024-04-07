@@ -41,14 +41,19 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < Terrain.TERRAIN_ROWS; j++)
 				{
-					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i, 2 * j], _terrain.Colours[i, j]);
-					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i + 1, 2 * j + 1], _terrain.Colours[i, j]);
+					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i, 2 * j], _terrain.CellData[i, j].Colour);
+					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i + 1, 2 * j + 1], _terrain.CellData[i, j].Colour);
 				}
 			}
 
 			for(int i = 0; i < _terrain._bulletCount; i++)
 			{
 				_shapeBatcher.DrawCircle(_terrain._bullets[i].Circle.Position, _terrain._bullets[i].Circle.Radius, 8, 2, Color.Gold);
+			}
+
+			for (int i = 0; i < _terrain._enemyCount; i++)
+			{
+				_shapeBatcher.DrawCircle(_terrain._enemies[i].Circle.Position, _terrain._enemies[i].Circle.Radius, 8, 2, Color.Green);
 			}
 
 			_shapeBatcher.DrawCircle(_player.Circle.Position, _player.Circle.Radius, 16, 2, Color.Red);

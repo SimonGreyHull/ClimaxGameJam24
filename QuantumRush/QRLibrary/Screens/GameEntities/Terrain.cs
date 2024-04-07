@@ -11,8 +11,39 @@ namespace QRLibrary.Screens.GameEntities
 
 	}
 
+	internal class TerrainCellData
+	{
+		public Terrain.CELL_TYPE Type { get; private set; }
+		public int stepsToPlayer { get; set; }
+		public int stepsToTarget { get; set; }
+
+		public Color Colour { get; private set; }
+
+		public void SetType(Terrain.CELL_TYPE type)
+		{
+			Type = type;
+			switch (type)
+			{
+				case Terrain.CELL_TYPE.NONE:
+					Colour = Color.MediumPurple;
+					break;
+				case Terrain.CELL_TYPE.WALL:
+					Colour = Color.Black;
+					break;
+				case Terrain.CELL_TYPE.TARGET:
+					Colour = Color.LimeGreen;
+					break;
+				case Terrain.CELL_TYPE.ENEMY_SPAWNER:
+					Colour = Color.Red;
+					break;
+			}
+		}
+	}
+
 	internal class Terrain
 	{
+		public enum CELL_TYPE { WALL, TARGET, ENEMY_SPAWNER, NONE }
+
 		public const int TERRAIN_COLS = 16;
 		public const int TERRAIN_ROWS = 16;
 		public const int CELL_WIDTH = 100;
@@ -21,13 +52,16 @@ namespace QRLibrary.Screens.GameEntities
 		public Bullet[] _bullets = new Bullet[100];
 		public int _bulletCount = 0;
 
+		public Enemy[] _enemies = new Enemy[100];
+		public int _enemyCount = 0;
+
 		private Vector2[,] _terrainVertices = new Vector2[TERRAIN_COLS + 1, TERRAIN_ROWS + 1];
-		private Color[,] _cellColours = new Color[TERRAIN_COLS, TERRAIN_ROWS];
+		private TerrainCellData[,] _cellData = new TerrainCellData[TERRAIN_COLS, TERRAIN_ROWS];
 
 		public Triangle[,] _triangles = new Triangle[TERRAIN_COLS * 2, TERRAIN_ROWS * 2];
 
 		public Vector2[,] Vertices { get { return _terrainVertices; } }
-		public Color[,] Colours { get { return _cellColours; } }
+		public TerrainCellData[,] CellData { get { return _cellData; } }
 
 		public int _targetCol = 5, _targetRow = 5;
 
@@ -48,22 +82,23 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < TERRAIN_ROWS; j++)
 				{
+					_cellData[i, j] = new TerrainCellData();
 					if (i == 0 || j == 0 || i == TERRAIN_COLS - 1 || j == TERRAIN_ROWS - 1)
 					{
-						_cellColours[i, j] = Color.Black;
+						_cellData[i, j].SetType(CELL_TYPE.WALL);
 					}
 					else
 					{
 						switch (rng.Next(1, 4))
 						{
 							case 1:
-								_cellColours[i, j] = Color.Black;
+								_cellData[i, j].SetType(CELL_TYPE.WALL);
 								break;
 							case 2:
-								_cellColours[i, j] = Color.MediumPurple;
+								_cellData[i, j].SetType(CELL_TYPE.NONE);
 								break;
 							case 3:
-								_cellColours[i, j] = Color.MediumVioletRed;
+								_cellData[i, j].SetType(CELL_TYPE.NONE);
 								break;
 						}
 					}
@@ -79,7 +114,7 @@ namespace QRLibrary.Screens.GameEntities
 				}
 			}
 
-			_cellColours[_targetCol, _targetRow] = Color.LimeGreen;
+			_cellData[_targetCol, _targetRow].SetType(CELL_TYPE.TARGET);
 		}
 
 		public void UpdateMouse(Vector2 v)
@@ -90,7 +125,7 @@ namespace QRLibrary.Screens.GameEntities
 				{
 					if (_triangles[2 * i,2 * j].IsInside(v) || _triangles[2 * i + 1, 2 * j + 1].IsInside(v))
 					{
-						_cellColours[i, j] = Color.Blue;
+						//_cellColours[i, j] = Color.Blue;
 					}
 				}
 			}
@@ -130,7 +165,7 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < TERRAIN_ROWS; j++)
 				{
-					if (_cellColours[i, j] == Color.Black)
+					if (_cellData[i, j].Type == CELL_TYPE.WALL)
 					{
 						if (_triangles[2 * i, 2 * j].IntersectsCircle(circle) || _triangles[2 * i + 1, 2 * j + 1].IntersectsCircle(circle))
 						{
@@ -149,7 +184,7 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void ChangeTarget()
 		{
-			_cellColours[_targetCol, _targetRow] = Color.MediumVioletRed;
+			_cellData[_targetCol, _targetRow].SetType(CELL_TYPE.NONE);
 			int newCol, newRow;
 			Random rng = new Random();
 			do
@@ -157,11 +192,11 @@ namespace QRLibrary.Screens.GameEntities
 				newCol = rng.Next(_targetCol - 5, _targetCol + 5);
 				newRow = rng.Next(_targetRow - 5, _targetRow + 5);
 
-			} while (newCol < 0 || newRow < 0 || newCol >= TERRAIN_COLS || newRow >= TERRAIN_ROWS || _cellColours[newCol, newRow] == Color.Black);
+			} while (newCol < 0 || newRow < 0 || newCol >= TERRAIN_COLS || newRow >= TERRAIN_ROWS || _cellData[newCol, newRow].Type == CELL_TYPE.WALL);
 
 			_targetCol = newCol;
 			_targetRow = newRow;
-			_cellColours[_targetCol, _targetRow] = Color.LimeGreen;
+			_cellData[_targetCol, _targetRow].SetType(CELL_TYPE.TARGET);
 		}
 
 		public bool ReachedTarget(Vector2 playerPosition)
