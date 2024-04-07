@@ -43,7 +43,7 @@ namespace QRLibrary.Screens.GameEntities
 		{
 			OldPosition = Position;
 			Heading = heading;
-			Vector2 v = heading * 100 * seconds;
+			Vector2 v = heading * 200 * seconds;
 			switch (movement)
 			{
 				case Movement.FORWARD:

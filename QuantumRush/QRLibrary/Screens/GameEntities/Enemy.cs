@@ -6,6 +6,8 @@ namespace QRLibrary.Screens.GameEntities
 {
 	internal class Enemy
 	{
+
+
 		public Circle Circle { get; private set; }
 
 		public Vector2 Position { get { return Circle.Position; } }
@@ -19,7 +21,7 @@ namespace QRLibrary.Screens.GameEntities
 			Circle = new Circle(position, 12);
 			Velocity = new Vector2(10, 10);
 		}
-
+		
 		public void Update(float seconds)
 		{
 			OldPosition = Position;

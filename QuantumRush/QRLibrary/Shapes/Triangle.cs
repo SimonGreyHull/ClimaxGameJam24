@@ -75,6 +75,7 @@ namespace QRLibrary.Shapes
 			throw new NotImplementedException();
 		}
 
+		// TODO Optimise this rubbish
 		public override bool IsInside(in Vector2 point)
 		{
 			float[] triangleVerticesX = { Position.X + _vertices[0].X, Position.X + _vertices[1].X, Position.X + _vertices[2].X };

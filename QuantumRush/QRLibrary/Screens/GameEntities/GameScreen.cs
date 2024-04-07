@@ -15,7 +15,7 @@ namespace QRLibrary.Screens.GameEntities
 
 		private Vector2 _mouseInWorldSpace;
 
-		private Terrain _terrain = new();
+		private Terrain _terrain = Terrain.Instance();
 		private Camera _camera = new();
 		private Player _player = new();
 
@@ -41,8 +41,11 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < Terrain.TERRAIN_ROWS; j++)
 				{
-					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i, 2 * j], _terrain.CellData[i, j].Colour);
-					_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i + 1, 2 * j + 1], _terrain.CellData[i, j].Colour);
+					_shapeBatcher.DrawTriangle(_terrain.CellData[i, j].T1, _terrain.CellData[i, j].Colour);
+					_shapeBatcher.DrawTriangle(_terrain.CellData[i, j].T2, _terrain.CellData[i, j].Colour);
+					//_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i, 2 * j], _terrain.CellData[i, j].Colour);
+					//_shapeBatcher.DrawTriangle(_terrain._triangles[2 * i + 1, 2 * j + 1], _terrain.CellData[i, j].Colour);
+					_shapeBatcher.DrawCircle(_terrain.CellData[i, j].Centre, 2, 3, 1, Color.Pink);
 				}
 			}
 
@@ -59,6 +62,14 @@ namespace QRLibrary.Screens.GameEntities
 			_shapeBatcher.DrawCircle(_player.Circle.Position, _player.Circle.Radius, 16, 2, Color.Red);
 
 			_shapeBatcher.DrawArrow(_player.Position, _mouseInWorldSpace - _player.Position, 2, 3, Color.White);
+
+			Vector2 p1 = _player.Position;
+			(TerrainCellData[], int) indices = _terrain.GetSurroundingCells(p1);
+
+			for(int i = 0; i < indices.Item2; i++)
+			{
+				_shapeBatcher.DrawLine(p1, indices.Item1[i].Centre, 2, Color.Purple);
+			}
 
 			_shapeBatcher.End();
 

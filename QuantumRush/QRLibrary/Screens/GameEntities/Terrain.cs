@@ -12,8 +12,12 @@ namespace QRLibrary.Screens.GameEntities
 	internal class TerrainCellData
 	{
 		public Terrain.CELL_TYPE Type { get; private set; }
+		public Vector2 Centre { get; set; }
 		public int stepsToPlayer { get; private set; }
 		public int stepsToTarget { get; set; }
+
+		public Triangle T1 { get; set; }
+		public Triangle T2 { get; set; }
 
 		public Color Colour { get; private set; }
 
@@ -21,7 +25,7 @@ namespace QRLibrary.Screens.GameEntities
 		{
 			stepsToPlayer = steps;
 
-			Color[] colors = new Color[10];
+			Color[] colors = new Color[16];
 
 			int n = 0;
 			for (int i = 0; i < colors.Length; i++)
@@ -64,10 +68,46 @@ namespace QRLibrary.Screens.GameEntities
 	{
 		public enum CELL_TYPE { WALL, TARGET, ENEMY_SPAWNER, PLAYER, NONE }
 
-		public const int TERRAIN_COLS = 16;
-		public const int TERRAIN_ROWS = 16;
+		public const int TERRAIN_COLS = 32;
+		public const int TERRAIN_ROWS = 32;
 		public const int CELL_WIDTH = 100;
 		public const int CELL_HEIGHT = 100;
+
+		string[] level =
+		{
+			"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+			"W                              W",
+			"W   WWWWWWW    WWW   WWWWWWW   W",
+			"W   W     W    WWW   W     W   W",
+			"W   W     W    WWW   W     W   W",
+			"W   WW   WW          WW   WW   W",
+			"W        W            W        W",
+			"W        W   WWWWWW   W        W",
+			"W            W    W            W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W                              W",
+			"W    W                         W",
+			"W    W                         W",
+			"W    W                         W",
+			"W  WWW   WWW   WWW   WWW   WWW W",
+			"W                              W",
+			"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+		};
 
 		public Bullet[] _bullets = new Bullet[100];
 		public int _bulletCount = 0;
@@ -86,7 +126,16 @@ namespace QRLibrary.Screens.GameEntities
 		public int _targetCol = 5, _targetRow = 5;
 		public int _playerCol = 1, _playerRow = 1;
 
-		public Terrain()
+		private static Terrain _instance = null;
+
+		public static Terrain Instance()
+		{
+			if( _instance == null )
+				_instance = new Terrain();
+			return _instance;
+		}
+
+		private Terrain()
 		{
 			Random rng = new Random(1);
 			int dx = (int)CELL_WIDTH / 4;
@@ -104,27 +153,45 @@ namespace QRLibrary.Screens.GameEntities
 				for (int j = 0; j < TERRAIN_ROWS; j++)
 				{
 					_cellData[i, j] = new TerrainCellData();
-					if (i == 0 || j == 0 || i == TERRAIN_COLS - 1 || j == TERRAIN_ROWS - 1)
+
+					switch (level[j][i])
 					{
-						_cellData[i, j].SetType(CELL_TYPE.WALL);
-					}
-					else
-					{
-						switch (rng.Next(1, 4))
-						{
-							case 1:
-								_cellData[i, j].SetType(CELL_TYPE.WALL);
-								break;
-							case 2:
-								_cellData[i, j].SetType(CELL_TYPE.NONE);
-								break;
-							case 3:
-								_cellData[i, j].SetType(CELL_TYPE.NONE);
-								break;
-						}
+						case 'W':
+							_cellData[i, j].SetType(CELL_TYPE.WALL);
+							break;
+						default:
+							_cellData[i, j].SetType(CELL_TYPE.NONE);
+							break;
 					}
 				}
 			}
+
+			//for (int i = 0; i < TERRAIN_COLS; i++)
+			//{
+			//	for (int j = 0; j < TERRAIN_ROWS; j++)
+			//	{
+			//		_cellData[i, j] = new TerrainCellData();
+			//		if (i == 0 || j == 0 || i == TERRAIN_COLS - 1 || j == TERRAIN_ROWS - 1)
+			//		{
+			//			_cellData[i, j].SetType(CELL_TYPE.WALL);
+			//		}
+			//		else
+			//		{
+			//			switch (rng.Next(1, 4))
+			//			{
+			//				case 1:
+			//					_cellData[i, j].SetType(CELL_TYPE.WALL);
+			//					break;
+			//				case 2:
+			//					_cellData[i, j].SetType(CELL_TYPE.NONE);
+			//					break;
+			//				case 3:
+			//					_cellData[i, j].SetType(CELL_TYPE.NONE);
+			//					break;
+			//			}
+			//		}
+			//	}
+			//}
 
 			for (int i = 0; i < TERRAIN_COLS; i++)
 			{
@@ -132,6 +199,9 @@ namespace QRLibrary.Screens.GameEntities
 				{
 					_triangles[2 * i, 2 * j] = new Triangle(Vertices[i, j], Vertices[i + 1, j + 1], Vertices[i + 1, j]);
 					_triangles[2 * i + 1, 2 * j + 1] = new Triangle(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j + 1]);
+					_cellData[i, j].Centre = (Vertices[i, j] + Vertices[i + 1, j + 1] + Vertices[i + 1, j] + Vertices[i, j + 1]) / 4;
+					_cellData[i, j].T1 = _triangles[2 * i, 2 * j];
+					_cellData[i,j].T2 = _triangles[2 * i + 1, 2 * j + 1];
 				}
 			}
 
@@ -175,7 +245,6 @@ namespace QRLibrary.Screens.GameEntities
 						_enemies[j] = _enemies[_enemyCount - 1];
 						_enemyCount--;
 						break;
-						// Maybe a bug here if we remove a bullet and then check wall collisions?
 					}
 				}
 
@@ -217,20 +286,86 @@ namespace QRLibrary.Screens.GameEntities
 
 		public bool CheckWallsCollision(Circle circle)
 		{
-			for (int i = 0; i < TERRAIN_COLS; i++)
+			(TerrainCellData[], int) cells = GetSurroundingCells(circle.Position);
+			
+			for(int i = 0; i < cells.Item2; i++)
 			{
-				for (int j = 0; j < TERRAIN_ROWS; j++)
+				if (cells.Item1[i].Type == CELL_TYPE.WALL)
 				{
-					if (_cellData[i, j].Type == CELL_TYPE.WALL)
+					if (cells.Item1[i].T1.IntersectsCircle(circle) || cells.Item1[i].T2.IntersectsCircle(circle))
 					{
-						if (_triangles[2 * i, 2 * j].IntersectsCircle(circle) || _triangles[2 * i + 1, 2 * j + 1].IntersectsCircle(circle))
-						{
-							return true;
-						}
+						return true;
 					}
 				}
 			}
+
 			return false;
+
+			//for (int i = 0; i < TERRAIN_COLS; i++)
+			//{
+			//	for (int j = 0; j < TERRAIN_ROWS; j++)
+			//	{
+			//		if (_cellData[i, j].Type == CELL_TYPE.WALL)
+			//		{
+			//			if (_triangles[2 * i, 2 * j].IntersectsCircle(circle) || _triangles[2 * i + 1, 2 * j + 1].IntersectsCircle(circle))
+			//			{
+			//				return true;
+			//			}
+			//		}
+			//	}
+			//}
+			//return false;
+		}
+
+		public (int, int) GetCell(Vector2 point)
+		{
+			int col = (int)point.X / CELL_WIDTH;
+			int row = (int)point.Y / CELL_HEIGHT;
+
+			if(PointInCell(col, row, point))
+			{
+				return (col, row);
+			}
+
+			for(int i = col - 1; i <= col + 1;  i++)
+			{
+				for(int j = row - 1; j <= row + 1; j++)
+				{
+					if(IsValidGridCell(i, j))
+					{
+						if(PointInCell(i, j, point))
+						{
+							return (i, j);
+						}
+					}
+				} 
+			}
+
+			return (0, 0);
+		}
+
+		public (TerrainCellData[], int) GetSurroundingCells(Vector2 point)
+		{
+			int col = (int)point.X / CELL_WIDTH;
+			int row = (int)point.Y / CELL_HEIGHT;
+
+			TerrainCellData[] result = new TerrainCellData[9];
+
+			int nextResultIndex = 0;
+
+			for (int i = col - 1; i <= col + 1; i++)
+			{
+				for (int j = row - 1; j <= row + 1; j++)
+				{
+					if (IsValidGridCell(i, j))
+					{
+						result[nextResultIndex] = CellData[i, j];
+						nextResultIndex++;
+					}
+				}
+			}
+
+			return (result, nextResultIndex);
 		}
 
 		public bool PointInCell(int col, int row, Vector2 point)
@@ -247,6 +382,11 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void SetStepsToPlayer(int col, int row, int steps)
 		{
+			if(steps > 10)
+			{
+				return;
+			}
+
 			if(!IsValidGridCell(col, row))
 			{
 				return;
@@ -312,7 +452,7 @@ namespace QRLibrary.Screens.GameEntities
 		public bool CheckPlayerCollision(Player player)
 		{
 			UpdatePlayerCell(player);
-			return CheckWallsCollision(player.Circle);
+			return false; // CheckWallsCollision(player.Circle);
 		}
 
 		public void ChangeTarget()
