@@ -155,6 +155,7 @@ namespace QRLibrary.Screens.GameEntities
 			}
 		}
 
+
 		public void UpdateBullets(float seconds)
 		{
 			for (int i = 0; i < _bulletCount; i++)
@@ -164,6 +165,20 @@ namespace QRLibrary.Screens.GameEntities
 
 			for (int i = _bulletCount - 1; i >= 0; i--)
 			{
+				for(int j = 0; j < _enemyCount; j++)
+				{
+					if (_bullets[i].Circle.IntersectsCircle(_enemies[j].Circle))
+					{
+						_bullets[i] = _bullets[_bulletCount - 1];
+						_bulletCount--;
+
+						_enemies[j] = _enemies[_enemyCount - 1];
+						_enemyCount--;
+						break;
+						// Maybe a bug here if we remove a bullet and then check wall collisions?
+					}
+				}
+
 				if (CheckWallsCollision(_bullets[i].Circle))
 				{
 					_bullets[i] = _bullets[_bulletCount - 1];

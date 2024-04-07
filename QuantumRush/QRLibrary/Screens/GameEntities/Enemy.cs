@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Xna.Framework;
 using QRLibrary.Shapes;
 
 namespace QRLibrary.Screens.GameEntities

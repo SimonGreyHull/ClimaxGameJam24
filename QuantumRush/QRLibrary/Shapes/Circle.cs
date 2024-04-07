@@ -51,7 +51,7 @@ namespace QRLibrary.Shapes
 
 		public override bool IntersectsCircle(in Circle circle)
 		{
-			throw new NotImplementedException();
+			return (circle.Position - Position).LengthSquared() < Radius * Radius + circle.Radius * circle.Radius;
 		}
 
 		public override bool IntersectsTriangle(in Triangle triangle)
