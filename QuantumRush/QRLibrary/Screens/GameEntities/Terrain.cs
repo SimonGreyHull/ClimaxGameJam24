@@ -7,7 +7,6 @@ namespace QRLibrary.Screens.GameEntities
 	internal class TerrainChunk
 	{
 		public const int CHUNK_SIZE = 16;
-
 	}
 
 	internal class TerrainCellData
@@ -138,6 +137,8 @@ namespace QRLibrary.Screens.GameEntities
 
 			_cellData[_targetCol, _targetRow].SetType(CELL_TYPE.TARGET);
 			_cellData[_playerCol, _playerRow].SetType(CELL_TYPE.PLAYER);
+
+			AddEnemy(new Enemy(new Vector2(400, 400)));
 		}
 
 		public void UpdateMouse(Vector2 v)
@@ -171,6 +172,14 @@ namespace QRLibrary.Screens.GameEntities
 			}
 		}
 
+		public void UpdateEnemies(float seconds)
+		{
+			for(int i = 0; i < _enemyCount; i++)
+			{
+				_enemies[i].Update(seconds);
+			}
+		}
+
 		public void AddBullet(Bullet bullet)
 		{
 			if (_bulletCount == _bullets.Length)
@@ -180,6 +189,15 @@ namespace QRLibrary.Screens.GameEntities
 
 			_bullets[_bulletCount] = bullet;
 			_bulletCount++;
+		}
+
+		public void AddEnemy(Enemy enemy)
+		{
+			if(_enemyCount == _enemies.Length)
+			{ return; }
+
+			_enemies[_enemyCount] = enemy;
+			_enemyCount++;
 		}
 
 		public bool CheckWallsCollision(Circle circle)

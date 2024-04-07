@@ -118,6 +118,7 @@ namespace QRLibrary.Screens.GameEntities
 
 			//_terrain.UpdateMouse(_mouseInWorldSpace);
 
+			_terrain.UpdateEnemies(pSeconds);
 			_terrain.UpdateBullets(pSeconds);
 
 			_SecondsLeft -= pSeconds;
