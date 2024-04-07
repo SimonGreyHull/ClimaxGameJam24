@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shapes\Shape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shapes\ShapeBatcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shapes\Triangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SoundManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
@@ -36,6 +37,7 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Font.spritefont" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\music.mp3" />
     <Content Include="$(MSBuildThisFileDirectory)Content\selogo.png" />
   </ItemGroup>
 </Project>

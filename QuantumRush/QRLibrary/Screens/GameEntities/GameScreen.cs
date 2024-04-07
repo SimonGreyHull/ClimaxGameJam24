@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using QRLibrary.Shapes;
@@ -18,6 +19,9 @@ namespace QRLibrary.Screens.GameEntities
 		private Terrain _terrain = Terrain.Instance();
 		private Camera _camera = new();
 		private Player _player = new();
+		private SoundEffectInstance _music;
+		private SoundEffectInstance _bulletFire;
+		private SoundEffectInstance _bulletHit;
 
 		public Camera Camera { get { return _camera; } }
 		public Player Player { get { return _player; } }
@@ -28,6 +32,9 @@ namespace QRLibrary.Screens.GameEntities
 			_font = game.Content.Load<SpriteFont>("Font");
 			_batch = new SpriteBatch(game.GraphicsDevice);
 			_shapeBatcher = new ShapeBatcher();
+			game.SoundManager.Add("music");
+			_music = game.SoundManager.GetLoopableSoundEffectInstance("music");
+			_music.Play();
 		}
 
 		public void Draw(float pSeconds)
@@ -140,12 +147,11 @@ namespace QRLibrary.Screens.GameEntities
 			_terrain.UpdateEnemies(pSeconds);
 			_terrain.UpdateBullets(pSeconds);
 
-			_SecondsLeft -= pSeconds;
-
-			if (_SecondsLeft <= 0.0f)
+			if (!_player.IsAlive)
 			{
+				_music.Stop();
 				QuantumRush game = QuantumRush.Instance();
-			//	game.ReplaceScreen(new GameOverScreen());
+				game.ReplaceScreen(new GameOverScreen());
 			}
 
 			_camera.LookAt(_player.Position, _player.Heading);

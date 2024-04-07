@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using QRLibrary.Shapes;
 using System;
+using System.Linq;
 
 namespace QRLibrary.Screens.GameEntities
 {
@@ -28,19 +29,26 @@ namespace QRLibrary.Screens.GameEntities
 			if(colours == null)
 			{
 				colours = new Color[16];
-				int n = 0;
-				for (int i = 0; i < colours.Length; i++)
+				int n;
+				for (int i = 0; i < colours.Length / 2; i++)
 				{
-					n = 255 - i * 255 / colours.Length;
-					colours[i] = new Color(n, n, n);
+					n = i * 255 / (colours.Length / 2);
+					colours[i] = new Color(255, n, 0);
+				}
+				for (int i = colours.Length / 2, j = 0; i < colours.Length; i++, j++)
+				{
+					n = j * 255 / (colours.Length / 2);
+					colours[i] = new Color(255 - n, 255, 0);
 				}
 			}
+
+			//colours = colours.Reverse().ToArray();
 
 			stepsToPlayer = steps;
 
 			if (steps < colours.Length)
 			{
-			//	Colour = colours[steps];
+				Colour = colours[steps];
 			}
 		}
 
@@ -90,13 +98,13 @@ namespace QRLibrary.Screens.GameEntities
 			"WWWWWW  WWWWW  WWWWW",
 			"W        W         W",
 			"W        WWW       W",
-			"W                  W",
-			"W        W         W",
+			"W   W              W",
+			"W             W    W",
 			"W        W         W",
 			"W   WWWWWWWWWW     W",
-			"W        W         W",
-			"W        W         W",
-			"W        W         W",
+			"W        W   W     W",
+			"W        W   W     W",
+			"W     WWWW         W",
 			"W        W         W",
 			"W        W         W",
 			"WWWWWWWWWWWWWWWWWWWW"
@@ -183,7 +191,7 @@ namespace QRLibrary.Screens.GameEntities
 					col = rng.Next(TERRAIN_ROWS);
 					row = rng.Next(TERRAIN_COLS);
 				} while (_cellData[col, row].Type != CELL_TYPE.NONE);
-				_enemySpawners[i] = new EnemySpawner(_cellData[col, row], 100, 10 * i);
+				_enemySpawners[i] = new EnemySpawner(_cellData[col, row], 60, 6 * i);
 				_cellData[col, row].SetType(CELL_TYPE.ENEMY_SPAWNER);
 			}
 

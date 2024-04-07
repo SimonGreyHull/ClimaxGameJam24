@@ -11,6 +11,8 @@ namespace QRLibrary.Screens.GameEntities
 		public enum Movement { FORWARD, NONE, BACKWARD };
 		public enum Strafe { LEFT, NONE, RIGHT };
 
+		public bool IsAlive { get; set; }
+
 		private float bulletCooldown = 1f;
 
 		public bool CanFire { get { return bulletCooldown <= 0f; } }
@@ -37,6 +39,7 @@ namespace QRLibrary.Screens.GameEntities
 			movement = Movement.NONE;
 			strafe = Strafe.NONE;
 			Circle = new Circle(new Vector2(150, 250), 8);
+			IsAlive = true;
 		}
 
 		public void Update(float seconds, Vector2 heading)

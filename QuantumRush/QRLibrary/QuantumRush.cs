@@ -22,6 +22,8 @@ namespace QRLibrary
 		private SpriteBatch _spriteBatch;
 		private ScreenManager _screenManager = new ScreenManager();
 
+		internal SoundManager SoundManager { get; private set; }
+
 		internal void ReplaceScreen(IScreen screen)
 		{
 			_screenManager.Pop();
@@ -57,6 +59,8 @@ namespace QRLibrary
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
+
+			SoundManager = new SoundManager();
 
 			_screenManager.Push(new FlashScreen());
 		}
