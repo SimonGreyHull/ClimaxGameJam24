@@ -12,9 +12,12 @@ namespace QRLibrary.Screens.GameEntities
 		private float _spawnInterval;
 		public Vector2 _position { get; private set; }
 
-		public EnemySpawner(Vector2 position, float spawnInterval, float firstSpawn)
+		private TerrainCellData _cell;
+
+		public EnemySpawner(TerrainCellData cell, float spawnInterval, float firstSpawn)
 		{
-			_position = position;
+			_cell = cell;
+			_position = _cell.Centre;
 			_spawnInterval = spawnInterval;
 			_timeTillSpawn = firstSpawn;
 		}
@@ -27,6 +30,15 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				Terrain.Instance().AddEnemy(new Enemy(_position));
 				_timeTillSpawn += _spawnInterval;
+			}
+		}
+
+		public void PlayerCollision(Player player)
+		{
+			if(_cell.T1.IntersectsCircle(player.Circle)||
+				_cell.T2.IntersectsCircle(player.Circle))
+			{
+				_timeTillSpawn = _spawnInterval;
 			}
 		}
 	}

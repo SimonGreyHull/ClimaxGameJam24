@@ -46,11 +46,12 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void SetType(Terrain.CELL_TYPE type)
 		{
+			Random rng = new Random();
 			Type = type;
 			switch (type)
 			{
 				case Terrain.CELL_TYPE.NONE:
-					Colour = Color.MediumPurple;
+					Colour = rng.Next(0, 2) == 1 ? Color.BlueViolet : Color.MediumPurple;
 					break;
 				case Terrain.CELL_TYPE.WALL:
 					Colour = Color.Black;
@@ -92,7 +93,7 @@ namespace QRLibrary.Screens.GameEntities
 			"W                  W",
 			"W        W         W",
 			"W        W         W",
-			"W        W         W",
+			"W   WWWWWWWWWW     W",
 			"W        W         W",
 			"W        W         W",
 			"W        W         W",
@@ -182,7 +183,7 @@ namespace QRLibrary.Screens.GameEntities
 					col = rng.Next(TERRAIN_ROWS);
 					row = rng.Next(TERRAIN_COLS);
 				} while (_cellData[col, row].Type != CELL_TYPE.NONE);
-				_enemySpawners[i] = new EnemySpawner(_cellData[col, row].Centre, 100, 10 * i);
+				_enemySpawners[i] = new EnemySpawner(_cellData[col, row], 100, 10 * i);
 				_cellData[col, row].SetType(CELL_TYPE.ENEMY_SPAWNER);
 			}
 
@@ -429,7 +430,6 @@ namespace QRLibrary.Screens.GameEntities
 					}
 				}
 			}
-
 		}
 
 		public bool CheckPlayerCollision(Player player)

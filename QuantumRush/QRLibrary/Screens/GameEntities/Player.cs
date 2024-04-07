@@ -18,7 +18,7 @@ namespace QRLibrary.Screens.GameEntities
 		public Bullet GetBullet()
 		{
 			bulletCooldown = 0.5f;
-			return new Bullet(new Circle(Position, 4), Heading * 150);
+			return new Bullet(new Circle(Position, 4), Heading * 300);
 		}
 
 		public Movement movement { get; set; }

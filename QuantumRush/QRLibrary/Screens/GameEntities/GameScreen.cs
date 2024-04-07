@@ -79,8 +79,7 @@ namespace QRLibrary.Screens.GameEntities
 			_shapeBatcher.End();
 
 			_batch.Begin();
-			_batch.DrawString(_font, "GamePlay Screen", new Vector2(100, 50), Color.Black);
-			_batch.DrawString(_font, $"{_SecondsLeft.ToString("0.0")} Seconds Remaining", new Vector2(100, 100), Color.Black);
+
 			for(int i = 0; i < _terrain._enemySpawners.Length; i++)
 			{
 				Vector2 positionInWorldSpace = _terrain._enemySpawners[i]._position;
@@ -133,13 +132,10 @@ namespace QRLibrary.Screens.GameEntities
 				_player.PreviousPosition();
 			}
 
-			if (_terrain.ReachedTarget(_player.Position))
+			for(int i = 0; i < _terrain._enemySpawners.Length; i++)
 			{
-				_SecondsLeft += 3;
-				_terrain.ChangeTarget();
+				_terrain._enemySpawners[i].PlayerCollision(_player);
 			}
-
-			//_terrain.UpdateMouse(_mouseInWorldSpace);
 
 			_terrain.UpdateEnemies(pSeconds);
 			_terrain.UpdateBullets(pSeconds);
