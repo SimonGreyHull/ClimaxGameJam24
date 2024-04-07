@@ -182,7 +182,7 @@ namespace QRLibrary.Screens.GameEntities
 					col = rng.Next(TERRAIN_ROWS);
 					row = rng.Next(TERRAIN_COLS);
 				} while (_cellData[col, row].Type != CELL_TYPE.NONE);
-				_enemySpawners[i] = new EnemySpawner(_cellData[col, row].Centre, 5, 5 * i);
+				_enemySpawners[i] = new EnemySpawner(_cellData[col, row].Centre, 100, 10 * i);
 				_cellData[col, row].SetType(CELL_TYPE.ENEMY_SPAWNER);
 			}
 

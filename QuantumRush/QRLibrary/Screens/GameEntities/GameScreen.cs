@@ -81,6 +81,13 @@ namespace QRLibrary.Screens.GameEntities
 			_batch.Begin();
 			_batch.DrawString(_font, "GamePlay Screen", new Vector2(100, 50), Color.Black);
 			_batch.DrawString(_font, $"{_SecondsLeft.ToString("0.0")} Seconds Remaining", new Vector2(100, 100), Color.Black);
+			for(int i = 0; i < _terrain._enemySpawners.Length; i++)
+			{
+				Vector2 positionInWorldSpace = _terrain._enemySpawners[i]._position;
+				Vector2 positionInScreenSpace = _camera.ScreenSpaceFromWorldSpace(positionInWorldSpace);
+				string time = _terrain._enemySpawners[i]._timeTillSpawn.ToString("0.0");
+				_batch.DrawString(_font, time, positionInScreenSpace - _font.MeasureString(time) / 2, Color.Black);
+			}
 			_batch.End();
 		}
 

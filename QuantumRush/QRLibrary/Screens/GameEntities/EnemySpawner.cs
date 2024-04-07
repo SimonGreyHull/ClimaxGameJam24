@@ -8,15 +8,15 @@ namespace QRLibrary.Screens.GameEntities
 {
 	internal class EnemySpawner
 	{
-		private float _timeTillSpawn;
+		public float _timeTillSpawn { get; private set; }
 		private float _spawnInterval;
-		private Vector2 _position;
+		public Vector2 _position { get; private set; }
 
-		public EnemySpawner(Vector2 position, float spawnInterval, float offset)
+		public EnemySpawner(Vector2 position, float spawnInterval, float firstSpawn)
 		{
 			_position = position;
 			_spawnInterval = spawnInterval;
-			_timeTillSpawn = spawnInterval + offset;
+			_timeTillSpawn = firstSpawn;
 		}
 
 		public void Update(float seconds)

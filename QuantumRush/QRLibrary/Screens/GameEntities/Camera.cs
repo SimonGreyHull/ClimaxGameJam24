@@ -65,7 +65,8 @@ namespace QRLibrary.Screens.GameEntities
 
 		public Vector2 ScreenSpaceFromWorldSpace(Vector2 v)
 		{
-			return Vector2.Zero;
+			Vector3 result = QuantumRush.Instance().GraphicsDevice.Viewport.Project(new Vector3(v.X, v.Y, 0), _Projection, _View, Matrix.Identity);
+			return new Vector2(result.X, result.Y);
 		}
 	}
 }
