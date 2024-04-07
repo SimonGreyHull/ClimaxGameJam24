@@ -71,6 +71,11 @@ namespace QRLibrary.Screens.GameEntities
 				_shapeBatcher.DrawLine(p1, indices.Item1[i].Centre, 2, Color.Purple);
 			}
 
+			for(int i = 0; i < _terrain._enemyCount; i++)
+			{
+				_shapeBatcher.DrawLine(_terrain._enemies[i].Circle.Position, _player.Position, 2, Color.Red);
+			}
+
 			_shapeBatcher.End();
 
 			_batch.Begin();

@@ -26,6 +26,24 @@ namespace QRLibrary.Screens.GameEntities
 		{
 			OldPosition = Position;
 
+			Terrain terrain = Terrain.Instance();
+
+			(TerrainCellData[], int) cells = terrain.GetSurroundingCells(Position);
+
+			TerrainCellData targetCell = cells.Item1[0];
+
+			for(int i = 1; i < cells.Item2; i++)
+			{
+				if (cells.Item1[i].stepsToPlayer < targetCell.stepsToPlayer)
+				{
+					targetCell = cells.Item1[i];
+				}
+			}
+
+			Vector2 desiredVelocity = targetCell.Centre - Position;
+			Vector2 steeringForce = desiredVelocity - Velocity;
+			Velocity += steeringForce * seconds;
+
 			Circle.Position += Velocity * seconds;
 		}
 	}
