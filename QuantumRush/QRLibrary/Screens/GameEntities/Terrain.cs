@@ -22,7 +22,14 @@ namespace QRLibrary.Screens.GameEntities
 		{
 			stepsToPlayer = steps;
 
-			Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Yellow };
+			Color[] colors = new Color[10];
+
+			int n = 0;
+			for (int i = 0; i < colors.Length; i++)
+			{
+				n = 255 - i * 255 / colors.Length;
+				colors[i] = new Color(n, n, n);
+			}
 
 			if (steps < colors.Length)
 			{
@@ -221,13 +228,10 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				_cellData[col, row].SetStepsToPlayer(steps);
 
-				for (int dx = -1; dx <= 1; dx++)
-				{
-					for (int dy = -1; dy <= 1; dy++)
-					{
-						SetStepsToPlayer(col + dx, row + dy, steps + 1);
-					}
-				}
+				SetStepsToPlayer(col + 1, row, steps + 1);
+				SetStepsToPlayer(col - 1, row, steps + 1);
+				SetStepsToPlayer(col, row + 1, steps + 1);
+				SetStepsToPlayer(col, row - 1, steps + 1);
 			}
 		}
 
