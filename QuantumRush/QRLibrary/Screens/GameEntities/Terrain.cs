@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using QRLibrary.Shapes;
 using System;
-using System.Reflection.Metadata.Ecma335;
 
 namespace QRLibrary.Screens.GameEntities
 {
@@ -14,10 +13,22 @@ namespace QRLibrary.Screens.GameEntities
 	internal class TerrainCellData
 	{
 		public Terrain.CELL_TYPE Type { get; private set; }
-		public int stepsToPlayer { get; set; }
+		public int stepsToPlayer { get; private set; }
 		public int stepsToTarget { get; set; }
 
 		public Color Colour { get; private set; }
+
+		public void SetStepsToPlayer(int steps)
+		{
+			stepsToPlayer = steps;
+
+			Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Yellow };
+
+			if (steps < colors.Length)
+			{
+				Colour = colors[steps];
+			}
+		}
 
 		public void SetType(Terrain.CELL_TYPE type)
 		{
@@ -36,13 +47,16 @@ namespace QRLibrary.Screens.GameEntities
 				case Terrain.CELL_TYPE.ENEMY_SPAWNER:
 					Colour = Color.Red;
 					break;
+				case Terrain.CELL_TYPE.PLAYER:
+					Colour = Color.HotPink;
+					break;
 			}
 		}
 	}
 
 	internal class Terrain
 	{
-		public enum CELL_TYPE { WALL, TARGET, ENEMY_SPAWNER, NONE }
+		public enum CELL_TYPE { WALL, TARGET, ENEMY_SPAWNER, PLAYER, NONE }
 
 		public const int TERRAIN_COLS = 16;
 		public const int TERRAIN_ROWS = 16;
@@ -64,6 +78,7 @@ namespace QRLibrary.Screens.GameEntities
 		public TerrainCellData[,] CellData { get { return _cellData; } }
 
 		public int _targetCol = 5, _targetRow = 5;
+		public int _playerCol = 1, _playerRow = 1;
 
 		public Terrain()
 		{
@@ -74,7 +89,7 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j <= TERRAIN_ROWS; j++)
 				{
-					_terrainVertices[i, j] = new Vector2(i * CELL_WIDTH + rng.Next(-dx, dx), j * CELL_HEIGHT + rng.Next(-dy,dy));
+					_terrainVertices[i, j] = new Vector2(i * CELL_WIDTH + rng.Next(-dx, dx), j * CELL_HEIGHT + rng.Next(-dy, dy));
 				}
 			}
 
@@ -115,6 +130,7 @@ namespace QRLibrary.Screens.GameEntities
 			}
 
 			_cellData[_targetCol, _targetRow].SetType(CELL_TYPE.TARGET);
+			_cellData[_playerCol, _playerRow].SetType(CELL_TYPE.PLAYER);
 		}
 
 		public void UpdateMouse(Vector2 v)
@@ -123,7 +139,7 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				for (int j = 0; j < TERRAIN_ROWS; j++)
 				{
-					if (_triangles[2 * i,2 * j].IsInside(v) || _triangles[2 * i + 1, 2 * j + 1].IsInside(v))
+					if (_triangles[2 * i, 2 * j].IsInside(v) || _triangles[2 * i + 1, 2 * j + 1].IsInside(v))
 					{
 						//_cellColours[i, j] = Color.Blue;
 					}
@@ -133,12 +149,12 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void UpdateBullets(float seconds)
 		{
-			for(int i = 0; i < _bulletCount; i++)
+			for (int i = 0; i < _bulletCount; i++)
 			{
 				_bullets[i].Update(seconds);
 			}
 
-			for(int i = _bulletCount - 1; i >= 0; i--)
+			for (int i = _bulletCount - 1; i >= 0; i--)
 			{
 				if (CheckWallsCollision(_bullets[i].Circle))
 				{
@@ -150,7 +166,7 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void AddBullet(Bullet bullet)
 		{
-			if(_bulletCount == _bullets.Length)
+			if (_bulletCount == _bullets.Length)
 			{
 				return;
 			}
@@ -177,8 +193,88 @@ namespace QRLibrary.Screens.GameEntities
 			return false;
 		}
 
+		public bool PointInCell(int col, int row, Vector2 point)
+		{
+			return (_triangles[2 * col, 2 * row].IsInside(point) ||
+				_triangles[2 * col + 1, 2 * row + 1].IsInside(point));
+		}
+
+		private bool IsValidGridCell(int col, int row)
+		{
+			return col >= 0 && col < TERRAIN_COLS && row >= 0 && row < TERRAIN_ROWS;
+		}
+
+
+		public void SetStepsToPlayer(int col, int row, int steps)
+		{
+			if(!IsValidGridCell(col, row))
+			{
+				return;
+			}
+
+			if (_cellData[col, row].Type == CELL_TYPE.WALL)
+			{
+				return;
+			}
+
+			if (_cellData[col, row].stepsToPlayer > steps)
+			{
+				_cellData[col, row].SetStepsToPlayer(steps);
+
+				for (int dx = -1; dx <= 1; dx++)
+				{
+					for (int dy = -1; dy <= 1; dy++)
+					{
+						SetStepsToPlayer(col + dx, row + dy, steps + 1);
+					}
+				}
+			}
+		}
+
+		public void UpdatePlayerDistances(int col, int row)
+		{
+			for(int i = 0; i < TERRAIN_COLS; i++)
+			{
+				for(int j = 0; j < TERRAIN_ROWS; j++)
+				{
+					_cellData[i, j].SetStepsToPlayer(int.MaxValue);
+				}
+			}
+
+			SetStepsToPlayer(col, row, 0);
+		}
+
+		public void UpdatePlayerCell(Player player)
+		{
+			if (PointInCell(_playerCol, _playerRow, player.Position))
+			{
+				return;
+			}
+
+			int lowCol = Math.Max(_playerCol - 1, 0);
+			int highCol = Math.Min(_playerCol + 1, TERRAIN_COLS - 1);
+			int lowRow = Math.Max(_playerRow - 1, 0);
+			int highRow = Math.Min(_playerRow + 1, TERRAIN_ROWS - 1);
+
+			for(int i = lowCol; i <= highCol; i++)
+			{
+				for(int j = lowRow; j <= highRow; j++)
+				{
+					if(PointInCell(i, j, player.Position))
+					{
+						_playerCol = i;
+						_playerRow = j;
+						UpdatePlayerDistances(i, j);
+						return;
+					}
+				}
+			}
+
+		}
+
 		public bool CheckPlayerCollision(Player player)
 		{
+			UpdatePlayerCell(player);
 			return CheckWallsCollision(player.Circle);
 		}
 
