@@ -9,7 +9,10 @@ namespace QRLibrary.Screens.GameEntities
 
 		public Vector2 Velocity { get; }
 
-		public Bullet(Circle circle, Vector2 velocity) { Circle = circle; Velocity = velocity; }
+		public Bullet(Circle circle, Vector2 velocity) {
+			Circle = circle;
+			Velocity = velocity;
+		}
 
 		public void Update(float seconds)
 		{

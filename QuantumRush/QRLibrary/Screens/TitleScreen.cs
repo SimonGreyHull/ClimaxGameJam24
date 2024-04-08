@@ -5,6 +5,7 @@ using QRLibrary.Screens.GameEntities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace QRLibrary.Screens
 {
@@ -23,17 +24,44 @@ namespace QRLibrary.Screens
 		public void Draw(float pSeconds)
 		{
 			Game game = QuantumRush.Instance();
-			game.GraphicsDevice.Clear(Color.HotPink);
+			game.GraphicsDevice.Clear(Color.MediumPurple);
+
+			string[] text = { "Title Screen : Quantum Rush",
+				"No Artists! No... Problem???",
+				"Use the Mouse to Rotate the Ship",
+				"Use W and S keys to Move Forward and Back",
+				"Use A and D keys to Strafe Left and Right",
+				"Spawn points count down for a PERIOD of time!",
+				"Fly over the points to reset the count (and score points!)",
+				"If the count down reaches 0 an evil octogon is PERIODICALLY spawned",
+				"No problemo, use the left mouse button to send it to polygon hell! (and get more points!)",
+				"Press the Period Button (.) to Start." };
+
+			float totalHeight = 0;
+
+			for (int i = 0; i < text.Length; i++)
+			{
+				totalHeight += _font.MeasureString(text[i]).Y;
+			}
+
+			float startingHeight = (QuantumRush.Instance().GraphicsDevice.Viewport.Height - totalHeight) / 2;
 
 			_batch.Begin();
-			_batch.DrawString(_font, "Title Screen : Quantum Rush", new Vector2(100, 50), Color.Black);
-			_batch.DrawString(_font, "Press Q", new Vector2(100, 100), Color.Black);
+			Vector2 textPos = new Vector2(0, startingHeight);
+			Vector2 fontSize;
+			for (int i = 0; i < text.Length; i++)
+			{
+				fontSize = _font.MeasureString(text[i]);
+				textPos.X = (QuantumRush.Instance().GraphicsDevice.Viewport.Width - fontSize.X) / 2;
+				textPos.Y += fontSize.Y;
+				_batch.DrawString(_font, text[i], textPos, Color.Black);
+			}
 			_batch.End();
 		}
 
 		public void Update(float pSeconds)
 		{
-			if (Keyboard.GetState().IsKeyDown(Keys.Q))
+			if (Keyboard.GetState().IsKeyDown(Keys.OemPeriod))
 			{
 				QuantumRush game = QuantumRush.Instance();
 				game.PushScreen(new GameScreen());

@@ -15,8 +15,8 @@ namespace QRLibrary.Screens.GameEntities
 
 		public Enemy(Vector2 position)
 		{
-			Circle = new Circle(position, 12);
-			Velocity = new Vector2(10, 10);
+			Circle = new Circle(position, 20);
+			Velocity = new Vector2(0, 0);
 		}
 		
 		public void Update(float seconds)

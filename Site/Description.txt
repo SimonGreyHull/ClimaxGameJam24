@@ -1,0 +1,12 @@
+Quantum Rush 
+
+Enemy spawning nodes PERIODICALLY spawn enemies - unless you stop them!
+
+Written in MonoGame and compiles to Web Assembly (so should eventually run in a browser)
+A lot of work went into drawing a triangle, making a decent camera, collision detection and AI using Dijkstra map.
+
+TODO
+
+Better art
+Periodic upgrade system to keep progress between plays (e.g. speed, agility etc.)
+Add particles

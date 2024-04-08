@@ -13,8 +13,12 @@ namespace QRLibrary.Screens
 
 		public FlashScreen()
 		{
-			Game game = QuantumRush.Instance();
+			QuantumRush game = QuantumRush.Instance();
 			_LogoTexture = game.Content.Load<Texture2D>("selogo");
+			game.SoundManager.Add("music");
+			game.SoundManager.Add("shoot");
+			game.SoundManager.Add("explosion");
+			game.SoundManager.Add("points");
 			_SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 			int screenWidth = game.GraphicsDevice.Viewport.Width;
 			int screenHeight = game.GraphicsDevice.Viewport.Height;

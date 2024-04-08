@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using QRLibrary.Shapes;
 using System;
 using System.Linq;
@@ -13,16 +14,43 @@ namespace QRLibrary.Screens.GameEntities
 	internal class TerrainCellData
 	{
 		public static Color[] colours = null;
-
 		public Terrain.CELL_TYPE Type { get; private set; }
 		public Vector2 Centre { get; set; }
 		public int stepsToPlayer { get; private set; }
-		public int stepsToTarget { get; private set; }
+		public int stepsToLowestSpawner { get; private set; }
 
 		public Triangle T1 { get; set; }
 		public Triangle T2 { get; set; }
 
 		public Color Colour { get; private set; }
+
+		public void SetStepsToLowestSpawner(int steps)
+		{
+			if (colours == null)
+			{
+				colours = new Color[16];
+				int n;
+				for (int i = 0; i < colours.Length / 2; i++)
+				{
+					n = i * 255 / (colours.Length / 2);
+					colours[i] = new Color(255, n, 0);
+				}
+				for (int i = colours.Length / 2, j = 0; i < colours.Length; i++, j++)
+				{
+					n = j * 255 / (colours.Length / 2);
+					colours[i] = new Color(255 - n, 255, 0);
+				}
+				colours = colours.Reverse().ToArray();
+			}
+
+
+			stepsToLowestSpawner = steps;
+
+			if (Type == Terrain.CELL_TYPE.NONE && steps < colours.Length)
+			{	
+				Colour = colours[steps];
+			}
+		}
 
 		public void SetStepsToPlayer(int steps)
 		{
@@ -40,13 +68,14 @@ namespace QRLibrary.Screens.GameEntities
 					n = j * 255 / (colours.Length / 2);
 					colours[i] = new Color(255 - n, 255, 0);
 				}
+				colours = colours.Reverse().ToArray();
 			}
 
-			//colours = colours.Reverse().ToArray();
+
 
 			stepsToPlayer = steps;
 
-			if (steps < colours.Length)
+			if (Type == Terrain.CELL_TYPE.NONE && steps < colours.Length)
 			{
 				Colour = colours[steps];
 			}
@@ -59,10 +88,10 @@ namespace QRLibrary.Screens.GameEntities
 			switch (type)
 			{
 				case Terrain.CELL_TYPE.NONE:
-					Colour = rng.Next(0, 2) == 1 ? Color.BlueViolet : Color.MediumPurple;
+					Colour = Color.AliceBlue;
 					break;
 				case Terrain.CELL_TYPE.WALL:
-					Colour = Color.Black;
+					Colour = rng.Next(0, 2) == 1 ? Color.BlueViolet : Color.MediumPurple;
 					break;
 				case Terrain.CELL_TYPE.TARGET:
 					Colour = Color.LimeGreen;
@@ -80,7 +109,7 @@ namespace QRLibrary.Screens.GameEntities
 	internal class Terrain
 	{
 		public enum CELL_TYPE { WALL, TARGET, ENEMY_SPAWNER, PLAYER, NONE }
-
+		private Player thePlayer { get; set; }
 		public const int TERRAIN_COLS = 20;
 		public const int TERRAIN_ROWS = 20;
 		public const int CELL_WIDTH = 100;
@@ -89,24 +118,24 @@ namespace QRLibrary.Screens.GameEntities
 		string[] level =
 		{
 			"WWWWWWWWWWWWWWWWWWWW",
+			"WW WWW            WW",
+			"W   WW   S  WWW    W",
+			"W S WWW     W      W",
+			"W          WW  S WWW",
+			"W  WWWWWWWWWW      W",
 			"W                  W",
-			"W  WWWWWWW  W      W",
-			"W  W     W  W      W",
-			"W  W     W  W      W",
-			"W  WW   WWWWW      W",
-			"W        W         W",
-			"WWWWWW  WWWWW  WWWWW",
-			"W        W         W",
+			"W   S  WWWWWWW  S  W",
 			"W        WWW       W",
-			"W   W              W",
-			"W             W    W",
-			"W        W         W",
-			"W   WWWWWWWWWW     W",
-			"W        W   W     W",
-			"W        W   W     W",
-			"W     WWWW         W",
-			"W        W         W",
-			"W        W         W",
+			"WWWW     WWW     WWW",
+			"W     W   W        W",
+			"W  S   W    W   S  W",
+			"W      WW          W",
+			"W      WWWWWWW     W",
+			"WWWWW     W     WWWW",
+			"W         W        W",
+			"W  S  W      W  S  W",
+			"W     W   S  W     W",
+			"W     W      W     W",
 			"WWWWWWWWWWWWWWWWWWWW"
 		};
 
@@ -116,7 +145,7 @@ namespace QRLibrary.Screens.GameEntities
 		public Enemy[] _enemies = new Enemy[100];
 		public int _enemyCount = 0;
 
-		public EnemySpawner[] _enemySpawners;
+		public EnemySpawner[] _enemySpawners = new EnemySpawner[10];
 
 		private Vector2[,] _terrainVertices = new Vector2[TERRAIN_COLS + 1, TERRAIN_ROWS + 1];
 		private TerrainCellData[,] _cellData = new TerrainCellData[TERRAIN_COLS, TERRAIN_ROWS];
@@ -151,16 +180,28 @@ namespace QRLibrary.Screens.GameEntities
 				}
 			}
 
+
+			int spawnerIndex = 0;
 			for (int i = 0; i < TERRAIN_COLS; i++)
 			{
 				for (int j = 0; j < TERRAIN_ROWS; j++)
 				{
 					_cellData[i, j] = new TerrainCellData();
+					_triangles[2 * i, 2 * j] = new Triangle(Vertices[i, j], Vertices[i + 1, j + 1], Vertices[i + 1, j]);
+					_triangles[2 * i + 1, 2 * j + 1] = new Triangle(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j + 1]);
+					_cellData[i, j].Centre = (Vertices[i, j] + Vertices[i + 1, j + 1] + Vertices[i + 1, j] + Vertices[i, j + 1]) / 4;
+					_cellData[i, j].T1 = _triangles[2 * i, 2 * j];
+					_cellData[i, j].T2 = _triangles[2 * i + 1, 2 * j + 1];
 
 					switch (level[j][i])
 					{
 						case 'W':
 							_cellData[i, j].SetType(CELL_TYPE.WALL);
+							break;
+						case 'S':
+							_cellData[i, j].SetType(CELL_TYPE.ENEMY_SPAWNER);
+							_enemySpawners[spawnerIndex] = new EnemySpawner(_cellData[i, j], 20, rng.Next(5, 30));
+							spawnerIndex++;
 							break;
 						default:
 							_cellData[i, j].SetType(CELL_TYPE.NONE);
@@ -169,33 +210,27 @@ namespace QRLibrary.Screens.GameEntities
 				}
 			}
 
-			for (int i = 0; i < TERRAIN_COLS; i++)
-			{
-				for (int j = 0; j < TERRAIN_ROWS; j++)
-				{
-					_triangles[2 * i, 2 * j] = new Triangle(Vertices[i, j], Vertices[i + 1, j + 1], Vertices[i + 1, j]);
-					_triangles[2 * i + 1, 2 * j + 1] = new Triangle(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j + 1]);
-					_cellData[i, j].Centre = (Vertices[i, j] + Vertices[i + 1, j + 1] + Vertices[i + 1, j] + Vertices[i, j + 1]) / 4;
-					_cellData[i, j].T1 = _triangles[2 * i, 2 * j];
-					_cellData[i,j].T2 = _triangles[2 * i + 1, 2 * j + 1];
-				}
-			}
 
-			_enemySpawners = new EnemySpawner[10];
+			//_enemySpawners = new EnemySpawner[10];
 
-			for (int i = 0; i < _enemySpawners.Length; i++)
-			{
-				int col, row;
-				do
-				{
-					col = rng.Next(TERRAIN_ROWS);
-					row = rng.Next(TERRAIN_COLS);
-				} while (_cellData[col, row].Type != CELL_TYPE.NONE);
-				_enemySpawners[i] = new EnemySpawner(_cellData[col, row], 60, 6 * i);
-				_cellData[col, row].SetType(CELL_TYPE.ENEMY_SPAWNER);
-			}
-
+			//for (int i = 0; i < _enemySpawners.Length; i++)
+			//{
+			//	int col, row;
+			//	do
+			//	{
+			//		col = rng.Next(TERRAIN_ROWS);
+			//		row = rng.Next(TERRAIN_COLS);
+			//	} while (_cellData[col, row].Type != CELL_TYPE.NONE);
+				
+			//	_cellData[col, row].SetType(CELL_TYPE.ENEMY_SPAWNER);
+			//}
+			//UpdateDistanceToLowestSpawner();
 			//_cellData[_playerCol, _playerRow].SetType(CELL_TYPE.PLAYER);
+		}
+
+		public void SetPlayer(Player player)
+		{
+			thePlayer = player;
 		}
 
 		public void UpdateMouse(Vector2 v)
@@ -228,7 +263,9 @@ namespace QRLibrary.Screens.GameEntities
 					{
 						_bullets[i] = _bullets[_bulletCount - 1];
 						_bulletCount--;
-
+						SoundEffectInstance bulletHit = QuantumRush.Instance().SoundManager.GetSoundEffectInstance("explosion");
+						bulletHit.Play();
+						thePlayer.AddScore(10);
 						_enemies[j] = _enemies[_enemyCount - 1];
 						_enemyCount--;
 						break;
@@ -374,7 +411,7 @@ namespace QRLibrary.Screens.GameEntities
 
 		public void SetStepsToPlayer(int col, int row, int steps)
 		{
-			if(steps > 10)
+			if(steps > 50)
 			{
 				return;
 			}
@@ -413,6 +450,59 @@ namespace QRLibrary.Screens.GameEntities
 			SetStepsToPlayer(col, row, 0);
 		}
 
+		public void UpdateDistanceToLowestSpawner()
+		{
+			EnemySpawner lowest = _enemySpawners[0];
+			
+			for(int i = 0; i < _enemySpawners.Length; i++)
+			{
+				if(_enemySpawners[i]._timeTillSpawn < lowest._timeTillSpawn)
+				{
+					lowest = _enemySpawners[i];
+				}
+			}
+
+			for (int i = 0; i < TERRAIN_COLS; i++)
+			{
+				for (int j = 0; j < TERRAIN_ROWS; j++)
+				{
+					_cellData[i, j].SetStepsToLowestSpawner(int.MaxValue);
+				}
+			}
+
+			(int, int) cellID = GetCell(lowest._position);
+
+			SetStepsToLowestSpawner(cellID.Item1, cellID.Item2, 0);
+		}
+
+		public void SetStepsToLowestSpawner(int col, int row, int steps)
+		{
+			if (steps > 3)
+			{
+				return;
+			}
+
+			if (!IsValidGridCell(col, row))
+			{
+				return;
+			}
+
+			if (_cellData[col, row].Type == CELL_TYPE.WALL)
+			{
+				return;
+			}
+
+			if (_cellData[col, row].stepsToPlayer > steps)
+			{
+				_cellData[col, row].SetStepsToLowestSpawner(steps);
+
+				SetStepsToLowestSpawner(col + 1, row, steps + 1);
+				SetStepsToLowestSpawner(col - 1, row, steps + 1);
+				SetStepsToLowestSpawner(col, row + 1, steps + 1);
+				SetStepsToLowestSpawner(col, row - 1, steps + 1);
+			}
+		}
+
 		public void UpdatePlayerCell(Player player)
 		{
 			if (PointInCell(_playerCol, _playerRow, player.Position))
@@ -443,6 +533,15 @@ namespace QRLibrary.Screens.GameEntities
 		public bool CheckPlayerCollision(Player player)
 		{
 			UpdatePlayerCell(player);
+
+			for(int i = 0; i < _enemyCount; i++)
+			{
+				if (_enemies[i].Circle.IntersectsCircle(player.Circle))
+				{
+					player.IsAlive = false;
+				}
+			}
+
 			return CheckWallsCollision(player.Circle);
 		}
 

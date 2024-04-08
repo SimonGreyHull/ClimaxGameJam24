@@ -214,43 +214,64 @@ namespace QRLibrary.Shapes
 
 		public void DrawFilledCircle(Vector2 pCentre, float pRadius, int pNumVertices, Color pColour)
 		{
-			EnsureStarted();
 
 			const int MIN_POINTS = 3;
 			const int MAX_POINTS = 256;
 
 			pNumVertices = Math.Clamp(pNumVertices, MIN_POINTS, MAX_POINTS);
-			int shapeTriangleCount = pNumVertices - 2;
-			int shapeIndexCount = shapeTriangleCount * 3;
 
-			EnsureSpace(pNumVertices, shapeIndexCount);
-
-			for (int i = 0, index = 1; i < shapeTriangleCount; i++, index++)
-			{
-				_indices[_indexCount++] = (short)(0 + _vertexCount);
-				_indices[_indexCount++] = (short)(index + _vertexCount);
-				_indices[_indexCount++] = (short)(index + 1 + _vertexCount);
-			}
-
-			float ax = pRadius;
-			float ay = 0f;
-
-			float rotation = MathHelper.TwoPi / pNumVertices;
-			float sin = MathF.Sin(rotation);
-			float cos = MathF.Cos(rotation);
+			float deltaAngle = MathHelper.TwoPi / pNumVertices;
+			float angle = 0f;
 
 			for (int i = 0; i < pNumVertices; i++)
 			{
-				float x1 = ax;
-				float y1 = ay;
+				float ax = pCentre.X + pRadius * MathF.Sin(angle);
+				float ay = pCentre.Y + pRadius * MathF.Cos(angle);
 
-				_vertices[_vertexCount++] = new VertexPositionColor(new Vector3(x1 + pCentre.X, y1 + pCentre.Y, 0f), pColour);
+				angle += deltaAngle;
 
-				ax = cos * x1 - sin * y1;
-				ay = sin * x1 + cos * y1;
+				float bx = pCentre.X + pRadius * MathF.Sin(angle);
+				float by = pCentre.Y + pRadius * MathF.Cos(angle);
+				DrawTriangle(new Vector2(ax, ay), new Vector2(bx, by), pCentre, pColour);
 			}
 
-			_shapeCount++;
+			//EnsureStarted();
+
+			//const int MIN_POINTS = 3;
+			//const int MAX_POINTS = 256;
+
+			//pNumVertices = Math.Clamp(pNumVertices, MIN_POINTS, MAX_POINTS);
+			//int shapeTriangleCount = pNumVertices - 2;
+			//int shapeIndexCount = shapeTriangleCount * 3;
+
+			//EnsureSpace(pNumVertices, shapeIndexCount);
+
+			//for (int i = 0, index = 1; i < shapeTriangleCount; i++, index++)
+			//{
+			//	_indices[_indexCount++] = (short)(0 + _vertexCount);
+			//	_indices[_indexCount++] = (short)(index + _vertexCount);
+			//	_indices[_indexCount++] = (short)(index + 1 + _vertexCount);
+			//}
+
+			//float ax = pRadius;
+			//float ay = 0f;
+
+			//float rotation = MathHelper.TwoPi / pNumVertices;
+			//float sin = MathF.Sin(rotation);
+			//float cos = MathF.Cos(rotation);
+
+			//for (int i = 0; i < pNumVertices; i++)
+			//{
+			//	float x1 = ax;
+			//	float y1 = ay;
+
+			//	_vertices[_vertexCount++] = new VertexPositionColor(new Vector3(x1 + pCentre.X, y1 + pCentre.Y, 0f), pColour);
+
+			//	ax = cos * x1 - sin * y1;
+			//	ay = sin * x1 + cos * y1;
+			//}
+
+			//_shapeCount++;
 		}
 
 		public void DrawAxisAlignedRectangle(Vector2 pTopLeft, float pWidth, float pHeight, float pThickness, Color pColour)

@@ -11,6 +11,8 @@ namespace QRLibrary.Screens.GameEntities
 		public enum Movement { FORWARD, NONE, BACKWARD };
 		public enum Strafe { LEFT, NONE, RIGHT };
 
+		public int Score { get; private set; }
+
 		public bool IsAlive { get; set; }
 
 		private float bulletCooldown = 1f;
@@ -19,7 +21,7 @@ namespace QRLibrary.Screens.GameEntities
 
 		public Bullet GetBullet()
 		{
-			bulletCooldown = 0.5f;
+			bulletCooldown = 0.25f;
 			return new Bullet(new Circle(Position, 4), Heading * 300);
 		}
 
@@ -27,6 +29,7 @@ namespace QRLibrary.Screens.GameEntities
 		public Strafe strafe { get; set; }
 
 		public Circle Circle { get; private set; }
+		public Triangle Triangle { get; private set; }
 
 		private Vector2 OldPosition { get; set; }
 
@@ -38,8 +41,24 @@ namespace QRLibrary.Screens.GameEntities
 		public Player() {
 			movement = Movement.NONE;
 			strafe = Strafe.NONE;
-			Circle = new Circle(new Vector2(150, 250), 8);
+			Circle = new Circle(new Vector2(150, 250), 12);
+			BuildTriangle(Position, Heading, Circle.Radius);
 			IsAlive = true;
+		}
+
+		public void AddScore(int score)
+		{
+			Score += score;
+		}
+
+		private void BuildTriangle(Vector2 position, Vector2 Heading, float radius)
+		{
+			Vector2 forward = Heading * radius;
+			Vector2 left = new Vector2(-forward.Y, forward.X);
+			Vector2 V1 = Position + forward;
+			Vector2 V2 = Position - forward + left;
+			Vector2 V3 = Position - forward - left;
+			Triangle = new Triangle(V2, V1, V3);
 		}
 
 		public void Update(float seconds, Vector2 heading)
@@ -71,6 +90,8 @@ namespace QRLibrary.Screens.GameEntities
 			{
 				bulletCooldown -= seconds;
 			}
+
+			BuildTriangle(Position, Heading, Circle.Radius);
 		}
 
 		public void PreviousPosition()

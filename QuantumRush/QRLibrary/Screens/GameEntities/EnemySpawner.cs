@@ -14,6 +14,8 @@ namespace QRLibrary.Screens.GameEntities
 
 		private TerrainCellData _cell;
 
+		private bool _playerAlreadyInsideSoIgnore = false;
+
 		public EnemySpawner(TerrainCellData cell, float spawnInterval, float firstSpawn)
 		{
 			_cell = cell;
@@ -33,13 +35,26 @@ namespace QRLibrary.Screens.GameEntities
 			}
 		}
 
-		public void PlayerCollision(Player player)
+		public bool PlayerCollision(Player player)
 		{
-			if(_cell.T1.IntersectsCircle(player.Circle)||
+			if (_cell.T1.IntersectsCircle(player.Circle) ||
 				_cell.T2.IntersectsCircle(player.Circle))
 			{
-				_timeTillSpawn = _spawnInterval;
+				if (_playerAlreadyInsideSoIgnore)
+				{
+					return false;
+				}
+				else
+				{
+					_playerAlreadyInsideSoIgnore = true;
+					player.AddScore((int) (_spawnInterval - _timeTillSpawn));
+					_timeTillSpawn = _spawnInterval;
+					return true;
+				}
 			}
+
+			_playerAlreadyInsideSoIgnore = false;
+			return false;
 		}
 	}
 }

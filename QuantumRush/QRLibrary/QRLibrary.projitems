@@ -37,7 +37,10 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Font.spritefont" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\explosion.mp3" />
     <Content Include="$(MSBuildThisFileDirectory)Content\music.mp3" />
+    <Content Include="$(MSBuildThisFileDirectory)Content\points.mp3" />
     <Content Include="$(MSBuildThisFileDirectory)Content\selogo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Content\shoot.mp3" />
   </ItemGroup>
 </Project>
