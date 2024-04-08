@@ -1,0 +1,7 @@
+﻿In App Service Editor
+
+In web.config file add
+
+      <mimeMap fileExtension=".xnb" mimeType="application/xnb" />
+      <remove fileExtension=".br" />
+      <mimeMap fileExtension=".br" mimeType="application/brotli" />
