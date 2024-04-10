@@ -169,6 +169,8 @@ namespace QRLibrary.Screens.GameEntities
 
 		private Terrain()
 		{
+			_playerCol = 1;
+			_playerRow = 1;
 			Random rng = new Random(1);
 			int dx = (int)CELL_WIDTH / 4;
 			int dy = (int)CELL_HEIGHT / 4;
@@ -231,6 +233,15 @@ namespace QRLibrary.Screens.GameEntities
 		public void SetPlayer(Player player)
 		{
 			thePlayer = player;
+			_playerRow = 1;
+			_playerCol = 1;
+			_enemyCount = 0;
+			_bulletCount = 0;
+			Random rng = new Random();
+			for(int i = 0; i < _enemySpawners.Length; i++)
+			{
+				_enemySpawners[i].ResetWithOffset(rng.Next(5, 30));
+			}
 		}
 
 		public void UpdateMouse(Vector2 v)

@@ -24,6 +24,11 @@ namespace QRLibrary.Screens.GameEntities
 			_timeTillSpawn = firstSpawn;
 		}
 
+		public void ResetWithOffset(float offset)
+		{
+			_timeTillSpawn = offset;
+		}
+
 		public void Update(float seconds)
 		{
 			_timeTillSpawn -= seconds;
