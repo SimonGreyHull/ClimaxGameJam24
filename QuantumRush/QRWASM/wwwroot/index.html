@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -26,10 +26,13 @@
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script type="module">
         import { BrotliDecode } from './js/decode.min.js';
+        var enableBrotliDecompression = false;
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity)
             {
-                if (type !== 'dotnetjs' && location.hostname !== 'localhost')
+                // This function enables Brotli (br) decompression for http: connections
+                // and for webservers that don't support content compression!
+                if (enableBrotliDecompression === true && type !== 'dotnetjs' && location.hostname !== 'localhost')
                 {
                     return (async function()
                     {
@@ -38,10 +41,10 @@
                             throw new Error(response.statusText);
                         const originalResponseBuffer = await response.arrayBuffer();
                         const originalResponseArray = new Int8Array(originalResponseBuffer);
+                        const contentType = (type === 'dotnetwasm')
+                                            ? 'application/wasm'
+                            : 'application/octet-stream';
                         const decompressedResponseArray = BrotliDecode(originalResponseArray);
-                        const contentType = type === 'dotnetwasm'
-                                          ? 'application/wasm' 
-                                          : 'application/octet-stream';
                         return new Response(decompressedResponseArray,
                                             { headers: { 'content-type': contentType } 
                                    });
