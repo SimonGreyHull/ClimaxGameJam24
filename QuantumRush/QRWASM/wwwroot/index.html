@@ -31,7 +31,7 @@
             loadBootResource: function (type, name, defaultUri, integrity)
             {
                 // This function enables Brotli (br) decompression for http: connections
-                // and for webservers that don't support content compression!
+                // and for webservers that don't support content compression.
                 if (enableBrotliDecompression === true && type !== 'dotnetjs' && location.hostname !== 'localhost')
                 {
                     return (async function()

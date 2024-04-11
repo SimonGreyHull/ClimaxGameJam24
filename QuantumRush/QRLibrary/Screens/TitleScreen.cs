@@ -2,10 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using QRLibrary.Screens.GameEntities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace QRLibrary.Screens
 {

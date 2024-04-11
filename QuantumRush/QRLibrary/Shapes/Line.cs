@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace QRLibrary.Shapes
+﻿namespace QRLibrary.Shapes
 {
 	internal class Line
 	{

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace QRLibrary.Screens
+﻿namespace QRLibrary.Screens
 {
 	internal interface IScreen
 	{
